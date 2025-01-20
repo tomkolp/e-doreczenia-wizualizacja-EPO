@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
-from reportlab.lib.colors import green
+from reportlab.lib.colors import green, black
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 from io import BytesIO
@@ -32,6 +32,14 @@ def parse_xml_file(file_path):
     # Check if rodzaj_doreczenie is "DORECZENIE"
     if rodzaj_doreczenie != "DORECZENIE":
         return "Brak danych", "", rodzaj_doreczenie, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+
+    # Extract IdKartyEPO
+    id_karty_epo_elem = root.find('.//mstns:IdKartyEPO', ns)
+    id_karty_epo = id_karty_epo_elem.text.strip() if id_karty_epo_elem is not None else "Brak danych"
+
+    # Extract IdPrzesylki
+    id_przesylki_elem = root.find('.//mstns:IdPrzesylki', ns)
+    id_przesylki = id_przesylki_elem.text.strip() if id_przesylki_elem is not None else "Brak danych"
 
     # Extract DataUtworzenia
     data_utworzenia_elem = root.find('mstns:DataUtworzenia', ns)
@@ -64,8 +72,6 @@ def parse_xml_file(file_path):
     adresat_miejscowosc = adresat_miejscowosc_elem.text if adresat_miejscowosc_elem is not None else "Brak danych"
     adresat_kod_pocztowy_elem = root.find('.//mstns:Adresat/mstns:KodPocztowy', ns)
     adresat_kod_pocztowy = adresat_kod_pocztowy_elem.text if adresat_kod_pocztowy_elem is not None else "Brak danych"
-    adresat_kraj_elem = root.find('.//mstns:Adresat/mstns:Kraj', ns)
-    adresat_kraj = adresat_kraj_elem.text if adresat_kraj_elem is not None else "Brak danych"
 
     # Extract Nadawca
     nadawca_nazwa_elem = root.find('.//mstns:Nadawca/mstns:Nazwa', ns)
@@ -80,66 +86,93 @@ def parse_xml_file(file_path):
     nadawca_miejscowosc = nadawca_miejscowosc_elem.text if nadawca_miejscowosc_elem is not None else "Brak danych"
     nadawca_kod_pocztowy_elem = root.find('.//mstns:Nadawca/mstns:KodPocztowy', ns)
     nadawca_kod_pocztowy = nadawca_kod_pocztowy_elem.text if nadawca_kod_pocztowy_elem is not None else "Brak danych"
-    nadawca_kraj_elem = root.find('.//mstns:Nadawca/mstns:Kraj', ns)
-    nadawca_kraj = nadawca_kraj_elem.text if nadawca_kraj_elem is not None else "Brak danych"
 
-    return data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, adresat_kraj, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, nadawca_kraj
+    return data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki
 
-def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, adresat_kraj, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, nadawca_kraj, output_file):
+def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, output_file, source_file):
     c = canvas.Canvas(output_file, pagesize=A4)
     width, height = A4
 
-    # Register and set font to Arial
+    # Rejestracja i ustawienie czcionki Arial
     pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
     c.setFont("Arial", 11)
 
-    # Add DataUtworzenia to PDF
-    c.drawString(50, height - 50, f"Data Utworzenia: {data_utworzenia}")
+    # Dodanie nazwy pliku źródłowego, IdKartyEPO i IdPrzesylki do PDF w trzech liniach
+    source_file_name = os.path.basename(source_file)
+    text1 = f"Raport z pliku: {source_file_name}"
+    text2 = f"IdKartyEPO: {id_karty_epo}"
+    text3 = f"IdPrzesylki: {id_przesylki}"
 
-    # Add RodzajDoreczenie to PDF
+    y_position = height - 30
+
+    for line in [text1, text2, text3]:
+        c.drawString(50, y_position, line)
+        y_position -= 20  # Dostosuj odstępy między liniami w razie potrzeby
+
+    # Dostosowanie y_position dla następnej sekcji
+    y_position -= 20
+
+    # Dodanie DataUtworzenia do PDF
+    c.drawString(50, y_position, f"Data Utworzenia: {data_utworzenia}")
+    y_position -= 20
+
+    # Dodanie RodzajDoreczenie do PDF
     if rodzaj_doreczenie == "DORECZENIE":
         c.setFillColor(green)
-        c.rect(45, height - 80, 200, 20, fill=True, stroke=False)
-        c.setFillColorRGB(0, 0, 0)
-    c.drawString(50, height - 75, f"Rodzaj Doreczenie: {rodzaj_doreczenie}")
+        c.rect(45, y_position - 10, 200, 20, fill=True, stroke=False)
+        c.setFillColor(black)
+    c.drawString(50, y_position, f"Rodzaj Doreczenie: {rodzaj_doreczenie}")
+    y_position -= 20
 
-    # Add DataNadania to PDF
-    c.drawString(50, height - 95, f"Data Nadania: {data_nadania}")
+    # Dodanie DataNadania do PDF
+    c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
+    y_position -= 20
 
-    # Add DataPisma to PDF
-    c.drawString(50, height - 115, f"Data Pisma: {data_pisma}")
+    # Dodanie DataPisma do PDF
+    c.drawString(50, y_position, f"Data Pisma: {data_pisma}")
+    y_position -= 20
 
-    # Add NumerNadania as clickable link to PDF
+    # Dodanie NumerNadania jako klikalny link do PDF
     tracking_url = f"https://sledzenie.poczta-polska.pl/?numer={numer_nadania}"
-    c.drawString(50, height - 135, "Nr. przesyłki: ")
+    c.drawString(50, y_position, "Nr. przesyłki: ")
     c.setFillColorRGB(0, 0, 1)  # Ustawienie koloru na niebieski
-    c.drawString(150, height - 135, tracking_url)
-    c.linkURL(tracking_url, (150, height - 135, 450, height - 120), relative=1, thickness=0, color=None)
-    c.setFillColorRGB(0, 0, 0)  # Powrót do domyślnego koloru
+    c.drawString(150, y_position, tracking_url)
+    c.linkURL(tracking_url, (150, y_position, 450, y_position + 15), relative=1, thickness=0, color=None)
+    c.setFillColor(black)  # Powrót do domyślnego koloru
+    y_position -= 20
 
-    # Add Adresat to PDF
-    c.drawString(50, height - 155, "Adresat:")
-    c.line(50, height - 157, 100, height - 157)  # Podkreślenie tekstu
-    c.drawString(50, height - 175, f"{adresat_nazwa}")
-    c.drawString(50, height - 195, f"Ulica: {adresat_ulica} {adresat_numer_domu}")
-    c.drawString(50, height - 215, f"Miejscowość: {adresat_miejscowosc}")
-    c.drawString(50, height - 235, f"Kod Pocztowy: {adresat_kod_pocztowy}")
-    c.drawString(50, height - 255, f"Kraj: {adresat_kraj}")
+    # Dodanie Adresat do PDF
+    c.drawString(50, y_position, "Adresat:")
+    c.line(50, y_position - 2, 100, y_position - 2)  # Podkreślenie tekstu
+    y_position -= 20
+    c.drawString(50, y_position, f"{adresat_nazwa}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Ulica: {adresat_ulica} {adresat_numer_domu}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Miejscowość: {adresat_miejscowosc}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Kod Pocztowy: {adresat_kod_pocztowy}")
+    y_position -= 20
 
-    # Add Nadawca to PDF
-    c.drawString(50, height - 275, "Nadawca:")
-    c.line(50, height - 277, 100, height - 277)  # Podkreślenie tekstu
-    c.drawString(50, height - 295, f"{nadawca_nazwa}")
-    c.drawString(50, height - 315, f"Nadawca cd.: {nadawca_nazwa2}")
-    c.drawString(50, height - 335, f"Ulica: {nadawca_ulica} {nadawca_numer_domu}")
-    c.drawString(50, height - 355, f"Miejscowość: {nadawca_miejscowosc}")
-    c.drawString(50, height - 375, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
-    c.drawString(50, height - 395, f"Kraj: {nadawca_kraj}")
+    # Dodanie Nadawca do PDF
+    c.drawString(50, y_position, "Nadawca:")
+    c.line(50, y_position - 2, 100, y_position - 2)  # Podkreślenie tekstu
+    y_position -= 20
+    c.drawString(50, y_position, f"{nadawca_nazwa}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Nadawca cd.: {nadawca_nazwa2}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Ulica: {nadawca_ulica} {nadawca_numer_domu}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Miejscowość: {nadawca_miejscowosc}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
+    y_position -= 20
 
-    # Add a new page for the image
+    # Dodanie nowej strony dla obrazu
     c.showPage()
 
-    # Decode and add PodpisObraz to PDF
+    # Dekodowanie i dodanie PodpisObraz do PDF
     if podpis_obraz:
         try:
             podpis_obraz_data = base64.b64decode(podpis_obraz)
@@ -154,10 +187,10 @@ def process_folder(folder_path):
     for filename in os.listdir(folder_path):
         if filename.endswith(".xml"):
             file_path = os.path.join(folder_path, filename)
-            data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, adresat_kraj, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, nadawca_kraj = parse_xml_file(file_path)
+            data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki = parse_xml_file(file_path)
             if rodzaj_doreczenie == "DORECZENIE":
                 pdf_output_file = os.path.join(folder_path, f"{os.path.splitext(filename)[0]}.pdf")
-                doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, adresat_kraj, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, nadawca_kraj, pdf_output_file)
+                doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, pdf_output_file, file_path)
 
 if __name__ == "__main__":
     folder_path = os.path.abspath(os.getcwd())
