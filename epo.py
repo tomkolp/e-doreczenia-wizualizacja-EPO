@@ -15,7 +15,7 @@ def parse_xml_file(file_path):
         root = tree.getroot()
     except ET.ParseError as e:
         print(f"Błąd parsowania pliku XML: {e}")
-        return "Brak danych", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+        return "Brak danych", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
 
     # Namespace
     ns = {
@@ -27,19 +27,19 @@ def parse_xml_file(file_path):
 
     # Extract RodzajDoreczenie
     rodzaj_doreczenie_elem = root.find('.//mstns:RodzajDoreczenie', ns)
-    rodzaj_doreczenie = rodzaj_doreczenie_elem.text.strip() if rodzaj_doreczenie_elem is not None else ""
+    rodzaj_doreczenie = rodzaj_doreczenie_elem.text.strip() if rodzaj_doreczenie_elem is not None and rodzaj_doreczenie_elem.text is not None else ""
 
     # Check if rodzaj_doreczenie is "DORECZENIE"
     if rodzaj_doreczenie != "DORECZENIE":
-        return "Brak danych", "", rodzaj_doreczenie, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+        return "Brak danych", "", rodzaj_doreczenie, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
 
     # Extract IdKartyEPO
     id_karty_epo_elem = root.find('.//mstns:IdKartyEPO', ns)
-    id_karty_epo = id_karty_epo_elem.text.strip() if id_karty_epo_elem is not None else "Brak danych"
+    id_karty_epo = id_karty_epo_elem.text.strip() if id_karty_epo_elem is not None and id_karty_epo_elem.text is not None else "Brak danych"
 
     # Extract IdPrzesylki
     id_przesylki_elem = root.find('.//mstns:IdPrzesylki', ns)
-    id_przesylki = id_przesylki_elem.text.strip() if id_przesylki_elem is not None else "Brak danych"
+    id_przesylki = id_przesylki_elem.text.strip() if id_przesylki_elem is not None and id_przesylki_elem.text is not None else "Brak danych"
 
     # Extract DataUtworzenia
     data_utworzenia_elem = root.find('mstns:DataUtworzenia', ns)
@@ -47,7 +47,7 @@ def parse_xml_file(file_path):
 
     # Extract PodpisObraz
     podpis_obraz_elem = root.find('.//mstns:PodpisObraz', ns)
-    podpis_obraz = podpis_obraz_elem.text.strip() if podpis_obraz_elem is not None else ""
+    podpis_obraz = podpis_obraz_elem.text.strip() if podpis_obraz_elem is not None and podpis_obraz_elem.text is not None else ""
 
     # Extract DataNadania
     data_nadania_elem = root.find('.//mstns:DataNadania', ns)
@@ -89,13 +89,26 @@ def parse_xml_file(file_path):
 
     # Extract TrybDoreczenia and DoRakWlasnych
     tryb_doreczenia_elem = root.find('.//mstns:TrybDoreczenia', ns)
-    tryb_doreczenia = tryb_doreczenia_elem.text.strip() if tryb_doreczenia_elem is not None else "Brak danych"
+    tryb_doreczenia = tryb_doreczenia_elem.text.strip() if tryb_doreczenia_elem is not None and tryb_doreczenia_elem.text is not None else "Brak danych"
     do_rak_wlasnych = tryb_doreczenia_elem.attrib.get('DoRakWlasnych', 'false') == 'true' if tryb_doreczenia_elem is not None else False
 
-    return data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych
+    # Extract Sygnatura, Rodzaj, Adnotacje
+    sygnatura_elem = root.find('.//mstns:Sygnatura', ns)
+    sygnatura = sygnatura_elem.text.strip() if sygnatura_elem is not None and sygnatura_elem.text is not None else ""
+    rodzaj_elem = root.find('.//mstns:Rodzaj', ns)
+    rodzaj = rodzaj_elem.text.strip() if rodzaj_elem is not None and rodzaj_elem.text is not None else ""
+    adnotacje_elem = root.find('.//mstns:Adnotacje', ns)
+    adnotacje = adnotacje_elem.text.strip() if adnotacje_elem is not None and adnotacje_elem.text is not None else ""
 
+    # Extract PodmiotDoreczenia and TrescAdnotacji
+    podmiot_doreczenia_elem = root.find('.//mstns:PodmiotDoreczenia', ns)
+    podmiot_doreczenia = podmiot_doreczenia_elem.text.strip() if podmiot_doreczenia_elem is not None and podmiot_doreczenia_elem.text is not None else ""
+    tresc_adnotacji_elem = root.find('.//mstns:TrescAdnotacji', ns)
+    tresc_adnotacji = tresc_adnotacji_elem.text.strip() if tresc_adnotacji_elem is not None and tresc_adnotacji_elem.text is not None else ""
 
-def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, output_file, source_file):
+    return data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, sygnatura, rodzaj, adnotacje, podmiot_doreczenia, tresc_adnotacji
+
+def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, sygnatura, rodzaj, adnotacje, podmiot_doreczenia, tresc_adnotacji, output_file, source_file):
     c = canvas.Canvas(output_file, pagesize=A4)
     width, height = A4
 
@@ -119,7 +132,7 @@ def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, dat
     y_position -= 20
 
     # Dodanie DataUtworzenia do PDF
-    c.drawString(50, y_position, f"Data Utworzenia: {data_utworzenia}")
+    c.drawString(50, y_position, f"Data Utworzenia: {data_utworzenia} (Data doręczenia)")
     y_position -= 20
 
     # Dodanie RodzajDoreczenie do PDF
@@ -129,6 +142,38 @@ def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, dat
         c.setFillColor(black)
     c.drawString(50, y_position, f"Rodzaj Doreczenie: {rodzaj_doreczenie}")
     y_position -= 20
+
+    # Dodanie PodmiotDoreczenia do PDF
+    if podmiot_doreczenia:
+        c.drawString(50, y_position, f"Podmiot Doreczenia: {podmiot_doreczenia}")
+        y_position -= 20
+
+    # Dodanie TrescAdnotacji do PDF
+    if tresc_adnotacji:
+        c.drawString(50, y_position, f"Tresc Adnotacji: {tresc_adnotacji}")
+        y_position -= 20
+
+    # Dodanie TrybDoreczenia do PDF
+    tryb_doreczenia_text = f"Tryb doręczenia: {tryb_doreczenia.capitalize()}"
+    if do_rak_wlasnych:
+        tryb_doreczenia_text += " (do rąk własnych)"
+    c.drawString(50, y_position, tryb_doreczenia_text)
+    y_position -= 20
+
+    # Dodanie Sygnatura do PDF
+    if sygnatura:
+        c.drawString(50, y_position, f"Sygnatura: {sygnatura}")
+        y_position -= 20
+
+    # Dodanie Rodzaj do PDF
+    if rodzaj:
+        c.drawString(50, y_position, f"Rodzaj: {rodzaj}")
+        y_position -= 20
+
+    # Dodanie Adnotacje do PDF
+    if adnotacje:
+        c.drawString(50, y_position, f"Adnotacje: {adnotacje}")
+        y_position -= 20
 
     # Dodanie DataNadania do PDF
     c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
@@ -175,13 +220,6 @@ def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, dat
     c.drawString(50, y_position, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
     y_position -= 20
 
-    # Dodanie TrybDoreczenia do PDF
-    tryb_doreczenia_text = f"Tryb doręczenia: {tryb_doreczenia.capitalize()}"
-    if do_rak_wlasnych:
-        tryb_doreczenia_text += " (do rąk własnych)"
-    c.drawString(50, y_position, tryb_doreczenia_text)
-    y_position -= 20
-
     # Dodanie nowej strony dla obrazu
     c.showPage()
 
@@ -200,10 +238,10 @@ def process_folder(folder_path):
     for filename in os.listdir(folder_path):
         if filename.endswith(".xml"):
             file_path = os.path.join(folder_path, filename)
-            data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych = parse_xml_file(file_path)
+            data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, sygnatura, rodzaj, adnotacje, podmiot_doreczenia, tresc_adnotacji = parse_xml_file(file_path)
             if rodzaj_doreczenie == "DORECZENIE":
                 pdf_output_file = os.path.join(folder_path, f"{os.path.splitext(filename)[0]}.pdf")
-                doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, pdf_output_file, file_path)
+                doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, sygnatura, rodzaj, adnotacje, podmiot_doreczenia, tresc_adnotacji, pdf_output_file, file_path)
 
 if __name__ == "__main__":
     folder_path = os.path.abspath(os.getcwd())
