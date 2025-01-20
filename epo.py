@@ -85,10 +85,10 @@ def save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, 
     c = canvas.Canvas(output_file, pagesize=A4)
     width, height = A4
 
-    # Register and set font to DejaVuSans
-    pdfmetrics.registerFont(TTFont('DejaVuSans', 'DejaVuSans.ttf'))
-    pdfmetrics.registerFont(TTFont('DejaVuSans-Bold', 'DejaVuSans-Bold.ttf'))
-    c.setFont("DejaVuSans", 12)
+    # Register and set font to Arial
+    pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
+    pdfmetrics.registerFont(TTFont('ARLRDBD', 'ARLRDBD.ttf'))
+    c.setFont("Arial", 12)
 
     # Add DataUtworzenia to PDF
     c.drawString(100, height - 100, f"Data Utworzenia: {data_utworzenia}")
@@ -113,9 +113,9 @@ def save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, 
     c.drawString(200, height - 200, numer_nadania)
 
     # Add Adresat to PDF
-    c.setFont("DejaVuSans-Bold", 12)
+    c.setFont("ARLRDBD", 12)
     c.drawString(100, height - 225, "Adresat:")
-    c.setFont("DejaVuSans", 12)
+    c.setFont("Arial", 12)
     c.drawString(100, height - 250, f"{adresat_nazwa}")
     c.drawString(100, height - 275, f"Ulica: {adresat_ulica} {adresat_numer_domu}")
     c.drawString(100, height - 300, f"Miejscowość: {adresat_miejscowosc}")
@@ -123,9 +123,9 @@ def save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, 
     c.drawString(100, height - 350, f"Kraj: {adresat_kraj}")
 
     # Add Nadawca to PDF
-    c.setFont("DejaVuSans-Bold", 12)
+    c.setFont("ARLRDBD", 12)
     c.drawString(100, height - 375, "Nadawca:")
-    c.setFont("DejaVuSans", 12)
+    c.setFont("Arial", 12)
     c.drawString(100, height - 400, f"{nadawca_nazwa} {nadawca_nazwa2}")
     c.drawString(100, height - 425, f"Ulica: {nadawca_ulica} {nadawca_numer_domu}")
     c.drawString(100, height - 450, f"Miejscowość: {nadawca_miejscowosc}")
