@@ -25,6 +25,14 @@ def parse_xml_file(file_path):
         'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
     }
 
+    # Extract RodzajDoreczenie
+    rodzaj_doreczenie_elem = root.find('.//mstns:RodzajDoreczenie', ns)
+    rodzaj_doreczenie = rodzaj_doreczenie_elem.text.strip() if rodzaj_doreczenie_elem is not None else ""
+
+    # Check if rodzaj_doreczenie is "DORECZENIE"
+    if rodzaj_doreczenie != "DORECZENIE":
+        return "Brak danych", "", rodzaj_doreczenie, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+
     # Extract DataUtworzenia
     data_utworzenia_elem = root.find('mstns:DataUtworzenia', ns)
     data_utworzenia = data_utworzenia_elem.text if data_utworzenia_elem is not None else "Brak danych"
@@ -32,10 +40,6 @@ def parse_xml_file(file_path):
     # Extract PodpisObraz
     podpis_obraz_elem = root.find('.//mstns:PodpisObraz', ns)
     podpis_obraz = podpis_obraz_elem.text.strip() if podpis_obraz_elem is not None else ""
-
-    # Extract RodzajDoreczenie
-    rodzaj_doreczenie_elem = root.find('.//mstns:RodzajDoreczenie', ns)
-    rodzaj_doreczenie = rodzaj_doreczenie_elem.text.strip() if rodzaj_doreczenie_elem is not None else ""
 
     # Extract DataNadania
     data_nadania_elem = root.find('.//mstns:DataNadania', ns)
@@ -87,45 +91,50 @@ def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, dat
 
     # Register and set font to Arial
     pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
-    c.setFont("Arial", 12)
+    c.setFont("Arial", 11)
 
     # Add DataUtworzenia to PDF
-    c.drawString(100, height - 100, f"Data Utworzenia: {data_utworzenia}")
+    c.drawString(50, height - 50, f"Data Utworzenia: {data_utworzenia}")
 
     # Add RodzajDoreczenie to PDF
     if rodzaj_doreczenie == "DORECZENIE":
         c.setFillColor(green)
-        c.rect(95, height - 130, 200, 20, fill=True, stroke=False)
+        c.rect(45, height - 80, 200, 20, fill=True, stroke=False)
         c.setFillColorRGB(0, 0, 0)
-    c.drawString(100, height - 125, f"Rodzaj Doreczenie: {rodzaj_doreczenie}")
+    c.drawString(50, height - 75, f"Rodzaj Doreczenie: {rodzaj_doreczenie}")
 
     # Add DataNadania to PDF
-    c.drawString(100, height - 150, f"Data Nadania: {data_nadania}")
+    c.drawString(50, height - 95, f"Data Nadania: {data_nadania}")
 
     # Add DataPisma to PDF
-    c.drawString(100, height - 175, f"Data Pisma: {data_pisma}")
+    c.drawString(50, height - 115, f"Data Pisma: {data_pisma}")
 
     # Add NumerNadania as clickable link to PDF
     tracking_url = f"https://sledzenie.poczta-polska.pl/?numer={numer_nadania}"
-    c.drawString(100, height - 200, "Numer Nadania: ")
-    c.linkURL(tracking_url, (200, height - 200, 500, height - 185), relative=1, thickness=1, color=green)
-    c.drawString(200, height - 200, numer_nadania)
+    c.drawString(50, height - 135, "Nr. przesyłki: ")
+    c.setFillColorRGB(0, 0, 1)  # Ustawienie koloru na niebieski
+    c.drawString(150, height - 135, tracking_url)
+    c.linkURL(tracking_url, (150, height - 135, 450, height - 120), relative=1, thickness=0, color=None)
+    c.setFillColorRGB(0, 0, 0)  # Powrót do domyślnego koloru
 
     # Add Adresat to PDF
-    c.drawString(100, height - 225, "Adresat:")
-    c.drawString(100, height - 250, f"{adresat_nazwa}")
-    c.drawString(100, height - 275, f"Ulica: {adresat_ulica} {adresat_numer_domu}")
-    c.drawString(100, height - 300, f"Miejscowość: {adresat_miejscowosc}")
-    c.drawString(100, height - 325, f"Kod Pocztowy: {adresat_kod_pocztowy}")
-    c.drawString(100, height - 350, f"Kraj: {adresat_kraj}")
+    c.drawString(50, height - 155, "Adresat:")
+    c.line(50, height - 157, 100, height - 157)  # Podkreślenie tekstu
+    c.drawString(50, height - 175, f"{adresat_nazwa}")
+    c.drawString(50, height - 195, f"Ulica: {adresat_ulica} {adresat_numer_domu}")
+    c.drawString(50, height - 215, f"Miejscowość: {adresat_miejscowosc}")
+    c.drawString(50, height - 235, f"Kod Pocztowy: {adresat_kod_pocztowy}")
+    c.drawString(50, height - 255, f"Kraj: {adresat_kraj}")
 
     # Add Nadawca to PDF
-    c.drawString(100, height - 375, "Nadawca:")
-    c.drawString(100, height - 400, f"{nadawca_nazwa} {nadawca_nazwa2}")
-    c.drawString(100, height - 425, f"Ulica: {nadawca_ulica} {nadawca_numer_domu}")
-    c.drawString(100, height - 450, f"Miejscowość: {nadawca_miejscowosc}")
-    c.drawString(100, height - 475, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
-    c.drawString(100, height - 500, f"Kraj: {nadawca_kraj}")
+    c.drawString(50, height - 275, "Nadawca:")
+    c.line(50, height - 277, 100, height - 277)  # Podkreślenie tekstu
+    c.drawString(50, height - 295, f"{nadawca_nazwa}")
+    c.drawString(50, height - 315, f"Nadawca cd.: {nadawca_nazwa2}")
+    c.drawString(50, height - 335, f"Ulica: {nadawca_ulica} {nadawca_numer_domu}")
+    c.drawString(50, height - 355, f"Miejscowość: {nadawca_miejscowosc}")
+    c.drawString(50, height - 375, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
+    c.drawString(50, height - 395, f"Kraj: {nadawca_kraj}")
 
     # Add a new page for the image
     c.showPage()
