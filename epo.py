@@ -1,5 +1,6 @@
 import os
 import base64
+import textwrap
 import xml.etree.ElementTree as ET
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
@@ -206,17 +207,32 @@ def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, dat
     pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
     c.setFont("Arial", 11)
 
+    # Ustawienie marginesów
+    margin = 48.2  # 1.7 cm w punktach
+    available_width = width - 2 * margin
+
     # Dodanie nazwy pliku źródłowego, IdKartyEPO i IdPrzesylki do PDF w trzech liniach
     source_file_name = os.path.basename(source_file)
-    text1 = f"Raport z pliku: {source_file_name}"
+    prefix = "Raport z pliku: "
+    wrapped_file_name = textwrap.wrap(source_file_name, width=int((available_width - c.stringWidth(prefix, "Arial", 11)) / c.stringWidth('f', "Arial", 11)))
+    text1 = f"{prefix}{wrapped_file_name[0]}"
+    wrapped_file_name = wrapped_file_name[1:]
+    wrapped_file_name = "\n".join(wrapped_file_name)
+    text1 += f"\n{wrapped_file_name}"
     text2 = f"IdKartyEPO: {id_karty_epo}"
     text3 = f"IdPrzesylki: {id_przesylki}"
 
     y_position = height - 30
 
-    for line in [text1, text2, text3]:
-        c.drawString(50, y_position, line)
+    for line in text1.split('\n'):
+        c.drawString(margin, y_position, line)
         y_position -= 20  # Dostosuj odstępy między liniami w razie potrzeby
+
+    for line in [text2, text3]:
+        c.drawString(margin, y_position, line)
+        y_position -= 20  # Dostosuj odstępy między liniami w razie potrzeby
+
+
 
     # Dostosowanie y_position dla następnej sekcji
     y_position -= 20
@@ -335,16 +351,29 @@ def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer
     pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
     c.setFont("Arial", 11)
 
+    # Ustawienie marginesów
+    margin = 48.2  # 1.7 cm w punktach
+    available_width = width - 2 * margin
+
     # Dodanie nazwy pliku źródłowego, IdKartaEPO i IdPrzesylki do PDF w trzech liniach
     source_file_name = os.path.basename(source_file)
-    text1 = f"Raport z pliku: {source_file_name}"
+    prefix = "Raport z pliku: "
+    wrapped_file_name = textwrap.wrap(source_file_name, width=int((available_width - c.stringWidth(prefix, "Arial", 11)) / c.stringWidth('f', "Arial", 11)))
+    text1 = f"{prefix}{wrapped_file_name[0]}"
+    wrapped_file_name = wrapped_file_name[1:]
+    wrapped_file_name = "\n".join(wrapped_file_name)
+    text1 += f"\n{wrapped_file_name}"
     text2 = f"IdKartaEPO: {id_karta_epo}"
     text3 = f"IdPrzesylki: {id_przesylka}"
 
     y_position = height - 30
 
-    for line in [text1, text2, text3]:
-        c.drawString(50, y_position, line)
+    for line in text1.split('\n'):
+        c.drawString(margin, y_position, line)
+        y_position -= 20  # Dostosuj odstępy między liniami w razie potrzeby
+
+    for line in [text2, text3]:
+        c.drawString(margin, y_position, line)
         y_position -= 20  # Dostosuj odstępy między liniami w razie potrzeby
 
     # Dostosowanie y_position dla następnej sekcji
@@ -414,6 +443,8 @@ def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer
     c.save()
 
 def process_folder(folder_path):
+    MAX_FILENAME_LENGTH = 240  # Maksymalna długość nazwy pliku w systemie Windows
+
     for filename in os.listdir(folder_path):
         if filename.endswith(".xml"):
             file_path = os.path.join(folder_path, filename)
@@ -422,12 +453,20 @@ def process_folder(folder_path):
             data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, sygnatura, rodzaj, adnotacje, podmiot_doreczenia, tresc_adnotacji = doreczenie_parse_xml_file(file_path)
             if rodzaj_doreczenie == "DORECZENIE":
                 pdf_output_file = os.path.join(folder_path, f"{os.path.splitext(filename)[0]}_doreczenie.pdf")
+                if len(pdf_output_file) > MAX_FILENAME_LENGTH:
+                    print(f"Zbyt długa nazwa pliku: {pdf_output_file}. Należy skrócić nazwę. Naciśnij Enter, aby kontynuować.")
+                    input()
+                    return
                 doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, sygnatura, rodzaj, adnotacje, podmiot_doreczenia, tresc_adnotacji, pdf_output_file, file_path)
 
             # Parsowanie zwrotów awizowanych
             creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy, miejscowosc, ulica, dom, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom = zwrot_awizowany_parse_xml_file(file_path)
             if status_przesylki == 6:
                 pdf_output_file = os.path.join(folder_path, f"{os.path.splitext(filename)[0]}_zwrot_awizowany.pdf")
+                if len(pdf_output_file) > MAX_FILENAME_LENGTH:
+                    print(f"Zbyt długa nazwa pliku: {pdf_output_file}. Należy skrócić nazwę. Naciśnij Enter, aby kontynuować.")
+                    input()
+                    return
                 zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy, miejscowosc, ulica, dom, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, pdf_output_file, file_path)
 
 if __name__ == "__main__":
