@@ -197,6 +197,111 @@ def zwrot_awizowany_parse_xml_file(file_path):
 
     return creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, ulica_adresat, dom_adresat, lokal_adresat, adresat_miejscowosc, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, nadawca_lokal
 
+def zwrot_parse_xml_file(file_path):
+    try:
+        tree = ET.parse(file_path)
+        root = tree.getroot()
+    except ET.ParseError as e:
+        print(f"B��d parsowania pliku XML: {e}")
+        return "Brak danych", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+
+    ns = {
+        'mstns': 'KartaEPO/2018/07/15',
+        'ds': 'http://www.w3.org/2000/09/xmldsig#',
+        'xmime': 'http://www.w3.org/2005/05/xmlmime',
+        'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
+    }
+
+    rodzaj_zwrot_elem = root.find('.//mstns:RodzajZwrot', ns)
+    rodzaj_zwrot = rodzaj_zwrot_elem.text if rodzaj_zwrot_elem is not None else ""
+    print(f"Rodzaj zwrotu (po odczycie): {rodzaj_zwrot}")  # Debugowanie
+
+    if rodzaj_zwrot != "ZWROT":
+        return "Brak danych", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+
+    data_utworzenia_elem = root.find('.//mstns:DataUtworzenia', ns)
+    data_utworzenia = data_utworzenia_elem.text if data_utworzenia_elem is not None else "Brak danych"
+
+    id_karty_epo_elem = root.find('.//mstns:IdKartyEPO', ns)
+    id_karty_epo = id_karty_epo_elem.text if id_karty_epo_elem is not None else "Brak danych"
+
+    id_przesylki_elem = root.find('.//mstns:IdPrzesylki', ns)
+    id_przesylki = id_przesylki_elem.text if id_przesylki_elem is not None else "Brak danych"
+
+    numer_nadania_elem = root.find('.//mstns:NumerNadania', ns)
+    numer_nadania = numer_nadania_elem.text if numer_nadania_elem is not None else "Brak danych"
+
+    data_nadania_elem = root.find('.//mstns:DataNadania', ns)
+    data_nadania = data_nadania_elem.text if data_nadania_elem is not None else "Brak danych"
+
+    adresat_nazwa_elem = root.find('.//mstns:Adresat/mstns:Nazwa', ns)
+    adresat_nazwa = adresat_nazwa_elem.text if adresat_nazwa_elem is not None else "Brak danych"
+    adresat_ulica_elem = root.find('.//mstns:Adresat/mstns:Ulica', ns)
+    adresat_ulica = adresat_ulica_elem.text if adresat_ulica_elem is not None else "Brak danych"
+    adresat_numer_domu_elem = root.find('.//mstns:Adresat/mstns:NumerDomu', ns)
+    adresat_numer_domu = adresat_numer_domu_elem.text if adresat_numer_domu_elem is not None else "Brak danych"
+    adresat_miejscowosc_elem = root.find('.//mstns:Adresat/mstns:Miejscowosc', ns)
+    adresat_miejscowosc = adresat_miejscowosc_elem.text if adresat_miejscowosc_elem is not None else "Brak danych"
+    adresat_kod_pocztowy_elem = root.find('.//mstns:Adresat/mstns:KodPocztowy', ns)
+    adresat_kod_pocztowy = adresat_kod_pocztowy_elem.text if adresat_kod_pocztowy_elem is not None else "Brak danych"
+
+    nadawca_nazwa_elem = root.find('.//mstns:Nadawca/mstns:Nazwa', ns)
+    nadawca_nazwa = nadawca_nazwa_elem.text if nadawca_nazwa_elem is not None else "Brak danych"
+    nadawca_nazwa2_elem = root.find('.//mstns:Nadawca/mstns:Nazwa2', ns)
+    nadawca_nazwa2 = nadawca_nazwa2_elem.text if nadawca_nazwa2_elem is not None else ""
+    nadawca_ulica_elem = root.find('.//mstns:Nadawca/mstns:Ulica', ns)
+    nadawca_ulica = nadawca_ulica_elem.text if nadawca_ulica_elem is not None else "Brak danych"
+    nadawca_numer_domu_elem = root.find('.//mstns:Nadawca/mstns:NumerDomu', ns)
+    nadawca_numer_domu = nadawca_numer_domu_elem.text if nadawca_numer_domu_elem is not None else "Brak danych"
+    nadawca_miejscowosc_elem = root.find('.//mstns:Nadawca/mstns:Miejscowosc', ns)
+    nadawca_miejscowosc = nadawca_miejscowosc_elem.text if nadawca_miejscowosc_elem is not None else "Brak danych"
+    nadawca_kod_pocztowy_elem = root.find('.//mstns:Nadawca/mstns:KodPocztowy', ns)
+    nadawca_kod_pocztowy = nadawca_kod_pocztowy_elem.text if nadawca_kod_pocztowy_elem is not None else "Brak danych"
+
+    tryb_doreczenia_elem = root.find('.//mstns:TrybDoreczenia', ns)
+    tryb_doreczenia = tryb_doreczenia_elem.text if tryb_doreczenia_elem is not None else "Brak danych"
+    do_rak_wlasnych = tryb_doreczenia_elem.attrib.get('DoRakWlasnych', 'false') == 'true' if tryb_doreczenia_elem is not None else False
+
+    systemowa_data_elem = root.find('.//mstns:SystemowaDataOznaczenia', ns)
+    systemowa_data = systemowa_data_elem.text if systemowa_data_elem is not None else "Brak danych"
+
+    data_adnotacji_elem = root.find('.//mstns:DataAdnotacji', ns)
+    data_adnotacji = data_adnotacji_elem.text if data_adnotacji_elem is not None else "Brak danych"
+
+    data_zdarzenia_elem = root.find('.//mstns:DataZdarzenia', ns)
+    data_zdarzenia = data_zdarzenia_elem.text if data_zdarzenia_elem is not None else "Brak danych"
+
+    operator_imie_elem = root.find('.//mstns:Operator/mstns:Imie', ns)
+    operator_imie = operator_imie_elem.text if operator_imie_elem is not None else "Brak danych"
+    operator_nazwisko_elem = root.find('.//mstns:Operator/mstns:Nazwisko', ns)
+    operator_nazwisko = operator_nazwisko_elem.text if operator_nazwisko_elem is not None else "Brak danych"
+    operator_id_elem = root.find('.//mstns:Operator/mstns:IdOperatora', ns)
+    operator_id = operator_id_elem.text if operator_id_elem is not None else "Brak danych"
+
+    placowka_nazwa_elem = root.find('.//mstns:PlacowkaPocztowa/mstns:AdresPlacowkiPocztowej/mstns:Nazwa', ns)
+    placowka_nazwa = placowka_nazwa_elem.text if placowka_nazwa_elem is not None else "Brak danych"
+    placowka_ulica_elem = root.find('.//mstns:PlacowkaPocztowa/mstns:AdresPlacowkiPocztowej/mstns:Ulica', ns)
+    placowka_ulica = placowka_ulica_elem.text if placowka_ulica_elem is not None else "Brak danych"
+    placowka_numer_domu_elem = root.find('.//mstns:PlacowkaPocztowa/mstns:AdresPlacowkiPocztowej/mstns:NumerDomu', ns)
+    placowka_numer_domu = placowka_numer_domu_elem.text if placowka_numer_domu_elem is not None else "Brak danych"
+    placowka_miejscowosc_elem = root.find('.//mstns:PlacowkaPocztowa/mstns:AdresPlacowkiPocztowej/mstns:Miejscowosc', ns)
+    placowka_miejscowosc = placowka_miejscowosc_elem.text if placowka_miejscowosc_elem is not None else "Brak danych"
+    placowka_kod_pocztowy_elem = root.find('.//mstns:PlacowkaPocztowa/mstns:AdresPlacowkiPocztowej/mstns:KodPocztowy', ns)
+    placowka_kod_pocztowy = placowka_kod_pocztowy_elem.text if placowka_kod_pocztowy_elem is not None else "Brak danych"
+    placowka_kraj_elem = root.find('.//mstns:PlacowkaPocztowa/mstns:AdresPlacowkiPocztowej/mstns:Kraj', ns)
+    placowka_kraj = placowka_kraj_elem.text if placowka_kraj_elem is not None else "Brak danych"
+
+    powod_zwrotu_elem = root.find('.//mstns:PowodZwrotu', ns)
+    powod_zwrotu = powod_zwrotu_elem.text if powod_zwrotu_elem is not None else "Brak danych"
+
+    tresc_adnotacji_elem = root.find('.//mstns:TrescAdnotacji', ns)
+    tresc_adnotacji = tresc_adnotacji_elem.text if tresc_adnotacji_elem is not None else "Brak danych"
+
+    # Dodaj debugowanie na ko㵠funkcji
+    print(f"Rodzaj zwrotu (przed zwrotem): {rodzaj_zwrot}")
+
+    return (data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot)
+
 def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, sygnatura, rodzaj, adnotacje, podmiot_doreczenia, tresc_adnotacji, output_file, source_file):
     if rodzaj_doreczenie != "DORECZENIE":
         return
@@ -436,30 +541,142 @@ def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer
 
     c.save()
 
+def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot, output_file):
+    c = canvas.Canvas(output_file, pagesize=A4)
+    width, height = A4
+
+    pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
+    c.setFont("Arial", 11)
+
+    margin = 48.2
+    available_width = width - 2 * margin
+
+    y_position = height - 50
+    c.drawString(50, y_position, f"Data Utworzenia: {data_utworzenia}")
+    y_position -= 20
+    c.drawString(50, y_position, f"ID Karty EPO: {id_karty_epo}")
+    y_position -= 20
+    c.drawString(50, y_position, f"ID Przesyłki: {id_przesylki}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Numer Nadania: {numer_nadania}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
+    y_position -= 20
+
+    c.drawString(50, y_position, "Adresat:")
+    c.line(50, y_position - 2, 100, y_position - 2)
+    y_position -= 20
+    c.drawString(50, y_position, f"Nazwa: {adresat_nazwa}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Ulica: {adresat_ulica} {adresat_numer_domu}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Miejscowość: {adresat_miejscowosc}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Kod Pocztowy: {adresat_kod_pocztowy}")
+    y_position -= 20
+
+    c.drawString(50, y_position, "Nadawca:")
+    c.line(50, y_position - 2, 100, y_position - 2)
+    y_position -= 20
+    c.drawString(50, y_position, f"Nazwa: {nadawca_nazwa}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Nazwa cd.: {nadawca_nazwa2}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Ulica: {nadawca_ulica} {nadawca_numer_domu}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Miejscowość: {nadawca_miejscowosc}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
+    y_position -= 20
+
+    c.drawString(50, y_position, f"Tryb Doręczenia: {tryb_doreczenia}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Do Rąk Własnych: {'Tak' if do_rak_wlasnych else 'Nie'}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Data Adnotacji: {data_adnotacji}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Data Zdarzenia: {data_zdarzenia}")
+    y_position -= 20
+
+    c.drawString(50, y_position, "Operator:")
+    c.line(50, y_position - 2, 100, y_position - 2)
+    y_position -= 20
+    c.drawString(50, y_position, f"Imię: {operator_imie}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Nazwisko: {operator_nazwisko}")
+    y_position -= 20
+    c.drawString(50, y_position, f"ID Operatora: {operator_id}")
+    y_position -= 20
+
+    c.drawString(50, y_position, "Placówka Pocztowa:")
+    c.line(50, y_position - 2, 150, y_position - 2)
+    y_position -= 20
+    c.drawString(50, y_position, f"Nazwa: {placowka_nazwa}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Ulica: {placowka_ulica} {placowka_numer_domu}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Miejscowość: {placowka_miejscowosc}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Kod Pocztowy: {placowka_kod_pocztowy}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Kraj: {placowka_kraj}")
+    y_position -= 20
+
+    c.drawString(50, y_position, f"Powód Zwrotu: {powod_zwrotu}")
+    y_position -= 20
+    c.drawString(50, y_position, f"Treść Adnotacji: {tresc_adnotacji}")
+    y_position -= 20
+
+    c.save()
+
 def process_folder(folder_path):
     MAX_FILENAME_LENGTH = 240
 
     for filename in os.listdir(folder_path):
         if filename.endswith(".xml"):
             file_path = os.path.join(folder_path, filename)
+            print(f"Przetwarzanie pliku: {file_path}")
 
+            # Obsługa doreczenia
             data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, sygnatura, rodzaj, adnotacje, podmiot_doreczenia, tresc_adnotacji = doreczenie_parse_xml_file(file_path)
+            print(f"Rodzaj doreczenia: {rodzaj_doreczenie}")
             if rodzaj_doreczenie == "DORECZENIE":
+                print("Wykryto doreczenie")
                 pdf_output_file = os.path.join(folder_path, f"{os.path.splitext(filename)[0]}_doreczenie.pdf")
                 if len(pdf_output_file) > MAX_FILENAME_LENGTH:
                     print(f"Zbyt długa nazwa pliku: {pdf_output_file}. Należy skrócić nazwę. Naciśnij Enter, aby kontynuować.")
                     input()
                     return
                 doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, sygnatura, rodzaj, adnotacje, podmiot_doreczenia, tresc_adnotacji, pdf_output_file, file_path)
+                print(f"Utworzono plik PDF: {pdf_output_file}")
 
+            # Obsługa zwrotu
+            data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot = zwrot_parse_xml_file(file_path)
+            print(f"Rodzaj zwrotu: {rodzaj_zwrot}")
+            if rodzaj_zwrot == "ZWROT":
+                print("Wykryto zwrot")
+                pdf_output_file = os.path.join(folder_path, f"{os.path.splitext(filename)[0]}_zwrot.pdf")
+                if len(pdf_output_file) > MAX_FILENAME_LENGTH:
+                    print(f"Zbyt długa nazwa pliku: {pdf_output_file}. Należy skrócić nazwę. Naciśnij Enter, aby kontynuować.")
+                    input()
+                    return
+                zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot, pdf_output_file)
+                print(f"Utworzono plik PDF: {pdf_output_file}")
+
+            # Obsługa zwrotu awizowanego
             creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, ulica_adresat, dom_adresat, lokal_adresat, adresat_miejscowosc, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, nadawca_lokal = zwrot_awizowany_parse_xml_file(file_path)
+            print(f"Status przesylki: {status_przesylki}")
             if status_przesylki == 6:
+                print("Wykryto zwrot awizowany")
                 pdf_output_file = os.path.join(folder_path, f"{os.path.splitext(filename)[0]}_zwrot_awizowany.pdf")
                 if len(pdf_output_file) > MAX_FILENAME_LENGTH:
                     print(f"Zbyt długa nazwa pliku: {pdf_output_file}. Należy skrócić nazwę. Naciśnij Enter, aby kontynuować.")
                     input()
                     return
                 zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, ulica_adresat, dom_adresat, lokal_adresat, adresat_miejscowosc, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, nadawca_lokal, pdf_output_file, file_path)
+                print(f"Utworzono plik PDF: {pdf_output_file}")
 
 if __name__ == "__main__":
     folder_path = os.path.abspath(os.getcwd())
