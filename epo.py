@@ -641,6 +641,10 @@ def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania
 def process_folder(folder_path):
     MAX_FILENAME_LENGTH = 240
 
+    doreczenia_count = 0
+    zwrot_awizowany_count = 0
+    zwrot_count = 0
+
     for filename in os.listdir(folder_path):
         if filename.endswith(".xml"):
             file_path = os.path.join(folder_path, filename)
@@ -648,6 +652,7 @@ def process_folder(folder_path):
             # Obsługa doreczenia
             data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, sygnatura, rodzaj, adnotacje, podmiot_doreczenia, tresc_adnotacji = doreczenie_parse_xml_file(file_path)
             if rodzaj_doreczenie == "DORECZENIE":
+                doreczenia_count += 1
                 pdf_output_file = os.path.join(folder_path, f"{os.path.splitext(filename)[0]}_doreczenie.pdf")
                 if len(pdf_output_file) > MAX_FILENAME_LENGTH:
                     input()
@@ -657,6 +662,7 @@ def process_folder(folder_path):
             # Obsługa zwrotu awizowanego
             creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, ulica_adresat, dom_adresat, lokal_adresat, adresat_miejscowosc, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, nadawca_lokal = zwrot_awizowany_parse_xml_file(file_path)
             if status_przesylki == 6:
+                zwrot_awizowany_count += 1
                 pdf_output_file = os.path.join(folder_path, f"{os.path.splitext(filename)[0]}_zwrot_awizowany.pdf")
                 if len(pdf_output_file) > MAX_FILENAME_LENGTH:
                     input()
@@ -666,11 +672,17 @@ def process_folder(folder_path):
             # Obsługa zwrotu
             data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot = zwrot_parse_xml_file(file_path)
             if rodzaj_zwrot == "ZWROT":
+                zwrot_count += 1
                 pdf_output_file = os.path.join(folder_path, f"{os.path.splitext(filename)[0]}_zwrot.pdf")
                 if len(pdf_output_file) > MAX_FILENAME_LENGTH:
                     input()
                     return
                 zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot, pdf_output_file)
+
+    print(f"Doreczenia: {doreczenia_count}")
+    print(f"Zwrot awizowany: {zwrot_awizowany_count}")
+    if zwrot_count > 0:
+        print(f"\033[91mZwrot: {zwrot_count} (błędny adres, adresat nie mieszka pod wskazanym adresem lub inne)\033[0m")
 
 if __name__ == "__main__":
     folder_path = os.path.abspath(os.getcwd())
