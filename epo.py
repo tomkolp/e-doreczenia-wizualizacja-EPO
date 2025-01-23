@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
-from reportlab.lib.colors import green, black
+from reportlab.lib.colors import green, black, red
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 from io import BytesIO
@@ -626,7 +626,10 @@ def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania
 
     c.drawString(50, y_position, f"Powód Zwrotu: {powod_zwrotu}")
     y_position -= 20
+
+    c.setFillColor(red)
     c.drawString(50, y_position, f"Treść Adnotacji: {tresc_adnotacji}")
+    c.setFillColor(black)
     y_position -= 20
 
     c.save()
