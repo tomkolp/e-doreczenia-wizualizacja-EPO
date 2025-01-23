@@ -202,7 +202,7 @@ def zwrot_parse_xml_file(file_path):
         tree = ET.parse(file_path)
         root = tree.getroot()
     except ET.ParseError as e:
-        print(f"B��d parsowania pliku XML: {e}")
+        print(f"Błąd parsowania pliku XML: {e}")
         return "Brak danych", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
 
     ns = {
@@ -214,7 +214,6 @@ def zwrot_parse_xml_file(file_path):
 
     rodzaj_zwrot_elem = root.find('.//mstns:RodzajZwrot', ns)
     rodzaj_zwrot = rodzaj_zwrot_elem.text if rodzaj_zwrot_elem is not None else ""
-    print(f"Rodzaj zwrotu (po odczycie): {rodzaj_zwrot}")  # Debugowanie
 
     if rodzaj_zwrot != "ZWROT":
         return "Brak danych", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
@@ -296,9 +295,6 @@ def zwrot_parse_xml_file(file_path):
 
     tresc_adnotacji_elem = root.find('.//mstns:TrescAdnotacji', ns)
     tresc_adnotacji = tresc_adnotacji_elem.text if tresc_adnotacji_elem is not None else "Brak danych"
-
-    # Dodaj debugowanie na ko㵠funkcji
-    print(f"Rodzaj zwrotu (przed zwrotem): {rodzaj_zwrot}")
 
     return (data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot)
 
@@ -558,8 +554,16 @@ def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania
     y_position -= 20
     c.drawString(50, y_position, f"ID Przesyłki: {id_przesylki}")
     y_position -= 20
-    c.drawString(50, y_position, f"Numer Nadania: {numer_nadania}")
+
+    # Dodanie NumerNadania jako klikalny link do PDF
+    tracking_url = f"https://sledzenie.poczta-polska.pl/?numer={numer_nadania}"
+    c.drawString(50, y_position, "Nr. przesyłki: ")
+    c.setFillColorRGB(0, 0, 1)  # Ustawienie koloru na niebieski
+    c.drawString(150, y_position, tracking_url)
+    c.linkURL(tracking_url, (150, y_position, 450, y_position + 15), relative=1, thickness=0, color=None)
+    c.setFillColor(black)  # Powrót do domyślnego koloru
     y_position -= 20
+
     c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
     y_position -= 20
 
