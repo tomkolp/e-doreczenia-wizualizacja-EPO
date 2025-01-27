@@ -304,7 +304,7 @@ def doreczenie_po_awizo_parse_xml_file(file_path):
         root = tree.getroot()
     except ET.ParseError as e:
         print(f"Błąd parsowania pliku XML: {e}")
-        return tuple(["Brak danych"] * 48)
+        return tuple(["Brak danych"] * 40)
 
     ns = {
         'mstns': 'http://msepo.gov.pl/epo/XSD/KartaEPO.xsd',
@@ -325,7 +325,7 @@ def doreczenie_po_awizo_parse_xml_file(file_path):
         status_przesylki = int(status_przesylki_elem.text) if status_przesylki_elem is not None else 0
 
         if status_przesylki != 5:
-            return tuple(["Brak danych"] * 48)
+            return tuple(["Brak danych"] * 40)
 
         id_przesylka_elem = przesylka_elem.find('.//mstns:IDPrzesylka', ns)
         id_przesylka = id_przesylka_elem.text if id_przesylka_elem is not None else "Brak danych"
@@ -382,8 +382,8 @@ def doreczenie_po_awizo_parse_xml_file(file_path):
         data_awizo1_elem = przesylka_elem.find('.//mstns:DataAwizo1', ns)
         data_awizo1 = data_awizo1_elem.text if data_awizo1_elem is not None else "Brak danych"
 
-        data_awizo2_elem = przesylka_elem.find('.//mstns:DataAwizo2', ns)
-        data_awizo2 = data_awizo2_elem.text if data_awizo2_elem is not None else "Brak danych"
+        #data_awizo2_elem = przesylka_elem.find('.//mstns:DataAwizo2', ns)
+        #data_awizo2 = data_awizo2_elem.text if data_awizo2_elem is not None else "Brak danych"
 
         jednostka_ms_elem = przesylka_elem.find('.//mstns:TabletJednostkaMS', ns)
         id_jednostka_ms_elem = jednostka_ms_elem.find('.//mstns:IDJednostkaMS', ns)
@@ -398,17 +398,17 @@ def doreczenie_po_awizo_parse_xml_file(file_path):
         miasto_elem = jednostka_ms_elem.find('.//mstns:Miasto', ns)
         miasto = miasto_elem.text if miasto_elem is not None else "Brak danych"
 
-        kod_pocztowy_jednostki_elem = jednostka_ms_elem.find('.//mstns:KodPocztowy', ns)
-        kod_pocztowy_jednostki = kod_pocztowy_jednostki_elem.text if kod_pocztowy_jednostki_elem is not None else "Brak danych"
+        #kod_pocztowy_jednostki_elem = jednostka_ms_elem.find('.//mstns:KodPocztowy', ns)
+        #kod_pocztowy_jednostki = kod_pocztowy_jednostki_elem.text if kod_pocztowy_jednostki_elem is not None else "Brak danych"
 
-        ulica_jednostki_elem = jednostka_ms_elem.find('.//mstns:Ulica', ns)
-        ulica_jednostki = ulica_jednostki_elem.text if ulica_jednostki_elem is not None else "Brak danych"
+        #ulica_jednostki_elem = jednostka_ms_elem.find('.//mstns:Ulica', ns)
+        #ulica_jednostki = ulica_jednostki_elem.text if ulica_jednostki_elem is not None else "Brak danych"
 
-        dom_jednostki_elem = jednostka_ms_elem.find('.//mstns:Dom', ns)
-        dom_jednostki = dom_jednostki_elem.text if dom_jednostki_elem is not None else "Brak danych"
+        #dom_jednostki_elem = jednostka_ms_elem.find('.//mstns:Dom', ns)
+        #dom_jednostki = dom_jednostki_elem.text if dom_jednostki_elem is not None else "Brak danych"
 
-        lokal_jednostki_elem = jednostka_ms_elem.find('.//mstns:Lokal', ns)
-        lokal_jednostki = lokal_jednostki_elem.text if lokal_jednostki_elem is not None else "Brak danych"
+        #lokal_jednostki_elem = jednostka_ms_elem.find('.//mstns:Lokal', ns)
+        #lokal_jednostki = lokal_jednostki_elem.text if lokal_jednostki_elem is not None else "Brak danych"
 
         dane_biometryczne_elem = przesylka_elem.find('.//mstns:DaneBiometryczne', ns)
         data_podpisu_elem = dane_biometryczne_elem.find('.//mstns:DataPodpisu', ns)
@@ -423,9 +423,9 @@ def doreczenie_po_awizo_parse_xml_file(file_path):
         id_urzadzenia_elem = dane_biometryczne_elem.find('.//mstns:IdUrzadzenia', ns)
         id_urzadzenia = id_urzadzenia_elem.text if id_urzadzenia_elem is not None else "Brak danych"
 
-        czas_nacisk_elem = dane_biometryczne_elem.find('.//mstns:CzasNacisk', ns)
-        czas_elem = czas_nacisk_elem.find('.//mstns:Czas', ns)
-        czas = czas_elem.text if czas_elem is not None else "Brak danych"
+        #czas_nacisk_elem = dane_biometryczne_elem.find('.//mstns:CzasNacisk', ns)
+        #czas_elem = czas_nacisk_elem.find('.//mstns:Czas', ns)
+        #czas = czas_elem.text if czas_elem is not None else "Brak danych"
 
         wydajacy_elem = przesylka_elem.find('.//mstns:Wydajacy', ns)
         imie_wydajacego = wydajacy_elem.attrib.get('Imie', 'Brak danych')
@@ -437,9 +437,9 @@ def doreczenie_po_awizo_parse_xml_file(file_path):
         pni_placowki = wydajacy_elem.attrib.get('PNIPlacowki', 'Brak danych')
 
     else:
-        return tuple(["Brak danych"] * 48)
+        return tuple(["Brak danych"] * 40)
 
-    return (creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, kod_pocztowy_nadawca, ulica_adresat, ulica_nadawca, dom_adresat, dom_nadawca, lokal_adresat, lokal_nadawca, miejscowosc, status_przesylki, systemowa_data, odbiorca_przesylki, imie_nazwisko_odbiorcy, podpis, brak_doreczenia, awizo_miejsce_przesylki, awizo_miejsce_zawiadomienia, data_awizo1, data_awizo2, id_jednostka_ms, nazwa_jednostki, wydzial, miasto, kod_pocztowy_jednostki, ulica_jednostki, dom_jednostki, lokal_jednostki, data_podpisu, data_zapisu, id_operatora, id_urzadzenia, czas, imie_wydajacego, nazwisko_wydajacego, id_wydajacego, id_placowka, nazwa_placowki, adres_placowki, pni_placowki, "Brak danych", "Brak danych", "Brak danych")
+    return (creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, kod_pocztowy_nadawca, ulica_adresat, ulica_nadawca, dom_adresat, dom_nadawca, lokal_adresat, lokal_nadawca, miejscowosc, status_przesylki, systemowa_data, odbiorca_przesylki, imie_nazwisko_odbiorcy, podpis, brak_doreczenia, awizo_miejsce_przesylki, awizo_miejsce_zawiadomienia, data_awizo1, id_jednostka_ms, nazwa_jednostki, wydzial, miasto, data_podpisu, data_zapisu, id_operatora, id_urzadzenia, imie_wydajacego, nazwisko_wydajacego, id_wydajacego, id_placowka, nazwa_placowki, adres_placowki, pni_placowki, "brak")
 
 def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, sygnatura, rodzaj, adnotacje, podmiot_doreczenia, tresc_adnotacji, output_file, source_file):
     if rodzaj_doreczenie != "DORECZENIE":
@@ -635,8 +635,8 @@ def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer
     c.drawString(50, y_position, f"Data Awizo 1: {data_awizo1}")
     y_position -= 20
 
-    c.drawString(50, y_position, f"Data Awizo 2: {data_awizo2}")
-    y_position -= 20
+   # c.drawString(50, y_position, f"Data Awizo 2: {data_awizo2}")
+    #y_position -= 20
 
     tracking_url = f"https://sledzenie.poczta-polska.pl/?numer={numer_nadania}"
     c.drawString(50, y_position, "Nr. przesyłki: ")
@@ -781,7 +781,7 @@ def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania
 
     c.save()
 
-def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, kod_pocztowy_nadawca, ulica_adresat, ulica_nadawca, dom_adresat, dom_nadawca, lokal_adresat, lokal_nadawca, miejscowosc, status_przesylki, systemowa_data, odbiorca_przesylki, imie_nazwisko_odbiorcy, podpis, brak_doreczenia, awizo_miejsce_przesylki, awizo_miejsce_zawiadomienia, data_awizo1, id_jednostka_ms, nazwa_jednostki, wydzial, miasto, kod_pocztowy_jednostki, ulica_jednostki, dom_jednostki, lokal_jednostki, data_podpisu, data_zapisu, id_operatora, id_urzadzenia, czas, imie_wydajacego, nazwisko_wydajacego, id_wydajacego, id_placowka, nazwa_placowki, adres_placowki, pni_placowki, output_file, podpis_obraz_base64, source_file):
+def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, kod_pocztowy_nadawca, ulica_adresat, ulica_nadawca, dom_adresat, dom_nadawca, lokal_adresat, lokal_nadawca, miejscowosc, status_przesylki, systemowa_data, odbiorca_przesylki, imie_nazwisko_odbiorcy, podpis, brak_doreczenia, awizo_miejsce_przesylki, awizo_miejsce_zawiadomienia, data_awizo1, id_jednostka_ms, nazwa_jednostki, wydzial, miasto, data_podpisu, data_zapisu, id_operatora, id_urzadzenia, imie_wydajacego, nazwisko_wydajacego, id_wydajacego, id_placowka, nazwa_placowki, adres_placowki, pni_placowki, output_file, podpis_obraz_base64, source_file):
 
     c = canvas.Canvas(output_file, pagesize=A4)
     width, height = A4
@@ -861,13 +861,6 @@ def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, n
     y_position -= 20
     c.drawString(50, y_position, f"Miasto: {miasto}")
     y_position -= 20
-    c.drawString(50, y_position, f"Ulica: {ulica_jednostki} {dom_jednostki}")
-    y_position -= 20
-    if lokal_jednostki:
-        c.drawString(50, y_position, f"Lokal: {lokal_jednostki}")
-        y_position -= 20
-    c.drawString(50, y_position, f"Kod Pocztowy: {kod_pocztowy_jednostki}")
-    y_position -= 20
 
     # Dodanie nowej strony dla obrazu
     c.showPage()
@@ -917,8 +910,8 @@ def process_folder(folder_path):
                 zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, ulica_adresat, dom_adresat, lokal_adresat, adresat_miejscowosc, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, nadawca_lokal, pdf_output_file, file_path)
 
 
-            # Obsługa doreczenia po awizo
-            creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, kod_pocztowy_nadawca, ulica_adresat, ulica_nadawca, dom_adresat, dom_nadawca, lokal_adresat, lokal_nadawca, miejscowosc, status_przesylki, systemowa_data, odbiorca_przesylki, imie_nazwisko_odbiorcy, podpis, brak_doreczenia, awizo_miejsce_przesylki, awizo_miejsce_zawiadomienia, data_awizo1, id_jednostka_ms, nazwa_jednostki, wydzial, miasto, kod_pocztowy_jednostki, ulica_jednostki, dom_jednostki, lokal_jednostki, data_podpisu, data_zapisu, id_operatora, id_urzadzenia, czas, imie_wydajacego, nazwisko_wydajacego, id_wydajacego, id_placowka, nazwa_placowki, adres_placowki, pni_placowki, output_file, podpis_obraz_base64, source_file, data_awizo2 = doreczenie_po_awizo_parse_xml_file(file_path)
+           # Obsługa doreczenia po awizo
+            creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, kod_pocztowy_nadawca, ulica_adresat, ulica_nadawca, dom_adresat, dom_nadawca, lokal_adresat, lokal_nadawca, miejscowosc, status_przesylki, systemowa_data, odbiorca_przesylki, imie_nazwisko_odbiorcy, podpis, brak_doreczenia, awizo_miejsce_przesylki, awizo_miejsce_zawiadomienia, data_awizo1, id_jednostka_ms, nazwa_jednostki, wydzial, miasto, data_podpisu, data_zapisu, id_operatora, id_urzadzenia, imie_wydajacego, nazwisko_wydajacego, id_wydajacego, id_placowka, nazwa_placowki, adres_placowki, pni_placowki, podpis_obraz_base64 = doreczenie_po_awizo_parse_xml_file(file_path)
             print(f"Debug: nazwa_jednostki w process_folder przed save_to_pdf: {nazwa_jednostki}")
             if status_przesylki == 5:
                 doreczenia_po_zwrocie_count += 1
@@ -927,7 +920,7 @@ def process_folder(folder_path):
                     input()
                     return
                 print(f"Debug: nazwa_jednostki przed wywołaniem save_to_pdf: {nazwa_jednostki}")
-                doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, kod_pocztowy_nadawca, ulica_adresat, ulica_nadawca, dom_adresat, dom_nadawca, lokal_adresat, lokal_nadawca, miejscowosc, status_przesylki, systemowa_data, odbiorca_przesylki, imie_nazwisko_odbiorcy, podpis, brak_doreczenia, awizo_miejsce_przesylki, awizo_miejsce_zawiadomienia, data_awizo1, id_jednostka_ms, nazwa_jednostki, wydzial, miasto, kod_pocztowy_jednostki, ulica_jednostki, dom_jednostki, lokal_jednostki, data_podpisu, data_zapisu, id_operatora, id_urzadzenia, czas, imie_wydajacego, nazwisko_wydajacego, id_wydajacego, id_placowka, nazwa_placowki, adres_placowki, pni_placowki, pdf_output_file, podpis_obraz_base64, file_path)
+                doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, kod_pocztowy_nadawca, ulica_adresat, ulica_nadawca, dom_adresat, dom_nadawca, lokal_adresat, lokal_nadawca, miejscowosc, status_przesylki, systemowa_data, odbiorca_przesylki, imie_nazwisko_odbiorcy, podpis, brak_doreczenia, awizo_miejsce_przesylki, awizo_miejsce_zawiadomienia, data_awizo1, id_jednostka_ms, nazwa_jednostki, wydzial, miasto, data_podpisu, data_zapisu, id_operatora, id_urzadzenia, imie_wydajacego, nazwisko_wydajacego, id_wydajacego, id_placowka, nazwa_placowki, adres_placowki, pni_placowki, pdf_output_file, podpis_obraz_base64, file_path)
                 print(f"Debug: nazwa_jednostki po wywołaniu save_to_pdf: {nazwa_jednostki}")
 
             # Obsługa zwrotu
