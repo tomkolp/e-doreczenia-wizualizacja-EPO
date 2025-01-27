@@ -584,11 +584,12 @@ def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer
     c = canvas.Canvas(output_file, pagesize=A4)
     width, height = A4
 
+    # Rejestracja i ustawienie czcionki Arial
     pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
     c.setFont("Arial", 11)
 
     # Zawijanie nazwy pliku
-    text_wrap_width = 90  # Maksymalna liczba znaków dla nazwy pliku
+    text_wrap_width = 80  # Maksymalna liczba znaków dla nazwy pliku
 
     source_file_name = os.path.basename(source_file)
     wrapped_file_name = textwrap.wrap(source_file_name, width=text_wrap_width)
@@ -783,29 +784,25 @@ def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, n
     pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
     c.setFont("Arial", 11)
 
-    margin = 48.2
-    available_width = width - 2 * margin
+    # Zawijanie nazwy pliku
+    text_wrap_width = 90  # Maksymalna liczba znaków dla nazwy pliku
 
     source_file_name = os.path.basename(source_file)
-    prefix = "Raport z pliku: "
-    wrapped_file_name = textwrap.wrap(source_file_name, width=int((available_width - c.stringWidth(prefix, "Arial", 11)) / c.stringWidth('f', "Arial", 11)))
-    text1 = f"{prefix}{wrapped_file_name[0]}"
-    wrapped_file_name = wrapped_file_name[1:]
-    wrapped_file_name = "\n".join(wrapped_file_name)
-    text1 += f"\n{wrapped_file_name}"
-    text2 = f"IdKartaEPO: {id_karta_epo}"
-    text3 = f"IdPrzesyłki: {id_przesylka}"
+    wrapped_file_name = textwrap.wrap(source_file_name, width=text_wrap_width)
 
     y_position = height - 30
 
-    for line in text1.split('\n'):
-        c.drawString(margin, y_position, line)
+    c.drawString(48.2, y_position, "Raport z pliku: ")
+    y_position -= 20
+
+    for line in wrapped_file_name:
+        c.drawString(48.2, y_position, line)
         y_position -= 20
 
-    for line in [text2, text3]:
-        c.drawString(margin, y_position, line)
-        y_position -= 20
-
+    # Dodanie pozostałych informacji do PDF
+    c.drawString(48.2, y_position, f"IdKartyEPO: {id_karta_epo}")
+    y_position -= 20
+    c.drawString(48.2, y_position, f"IdPrzesylki: {id_przesylka}")
     y_position -= 20
 
     c.drawString(50, y_position, f"Data Utworzenia: {creation_date} ")
