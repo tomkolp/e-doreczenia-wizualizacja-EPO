@@ -9,6 +9,9 @@ from reportlab.lib.colors import green, black, red, orange
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 from io import BytesIO
+import requests
+import webbrowser
+from packaging import version
 
 def doreczenie_parse_xml_file(file_path):
     try:
@@ -1028,9 +1031,33 @@ def process_folder(folder_path):
     if zwrot_count > 0:
         print(f"\033[91mZwrot: {zwrot_count} (błędny adres, adresat nie mieszka pod wskazanym adresem lub inne)\033[0m")
 
+def check_latest_release(owner, repo, current_version):
+    url = f"https://api.github.com/repos/{owner}/{repo}/releases/latest"
+    response = requests.get(url)
+    if response.status_code == 200:
+        latest_release = response.json()
+        latest_version = latest_release['tag_name']
+        if version.parse(latest_version) > version.parse(current_version):
+            print(f"Nowa wersja dostępna: {latest_version}. Obecna wersja: {current_version}.")
+            user_input = input("Czy chcesz pobrać najnowszą wersję? Naciśnij 'T' lub 'N': ")
+            if user_input.lower() == 't':
+                webbrowser.open(f"https://github.com/{owner}/{repo}/releases")
+    else:
+        print("Nie udało się pobrać informacji o najnowszej wersji.")
 
 if __name__ == "__main__":
-    print("EPO wersja 1.10 Autor: Tomasz Rekusz")
+    print("EPO wersja 1.0.11 Autor: Tomasz Rekusz")
+    print()
+
+    # Przetwarzanie plików
     folder_path = os.path.abspath(os.getcwd())
     process_folder(folder_path)
+
+    # Sprawdzanie najnowszej wersji
+    owner = "tomkolp"
+    repo = "e-doreczenia-wizualizacja-EPO"
+    current_version = "1.0.11"
+    check_latest_release(owner, repo, current_version)
+
+    print()
     input("Naciśnij Enter, aby zakończyć...")
