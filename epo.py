@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
-from reportlab.lib.colors import green, black, red
+from reportlab.lib.colors import green, black, red, orange
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 from io import BytesIO
@@ -452,38 +452,31 @@ def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, dat
     pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
     c.setFont("Arial", 11)
 
-    # Ustawienie marginesów
-    margin = 48.2  # 1.7 cm w punktach
-    available_width = width - 2 * margin
+    # Zawijanie nazwy pliku
+    text_wrap_width = 90  # Maksymalna liczba znaków dla nazwy pliku
 
-    # Dodanie nazwy pliku źródłowego, IdKartyEPO i IdPrzesylki do PDF w trzech liniach
     source_file_name = os.path.basename(source_file)
-    prefix = "Raport z pliku: "
-    wrapped_file_name = textwrap.wrap(source_file_name, width=int((available_width - c.stringWidth(prefix, "Arial", 11)) / c.stringWidth('f', "Arial", 11)))
-    text1 = f"{prefix}{wrapped_file_name[0]}"
-    wrapped_file_name = wrapped_file_name[1:]
-    wrapped_file_name = "\n".join(wrapped_file_name)
-    text1 += f"\n{wrapped_file_name}"
-    text2 = f"IdKartyEPO: {id_karty_epo}"
-    text3 = f"IdPrzesylki: {id_przesylki}"
+    wrapped_file_name = textwrap.wrap(source_file_name, width=text_wrap_width)
 
     y_position = height - 30
 
-    for line in text1.split('\n'):
-        c.drawString(margin, y_position, line)
-        y_position -= 20  # Dostosuj odstępy między liniami w razie potrzeby
+    c.drawString(48.2, y_position, "Raport z pliku: ")
+    y_position -= 20
 
-    for line in [text2, text3]:
-        c.drawString(margin, y_position, line)
-        y_position -= 20  # Dostosuj odstępy między liniami w razie potrzeby
+    for line in wrapped_file_name:
+        c.drawString(48.2, y_position, line)
+        y_position -= 20
 
-
-
-    # Dostosowanie y_position dla następnej sekcji
+    # Dodanie pozostałych informacji do PDF
+    c.drawString(48.2, y_position, f"IdKartyEPO: {id_karty_epo}")
+    y_position -= 20
+    c.drawString(48.2, y_position, f"IdPrzesylki: {id_przesylki}")
     y_position -= 20
 
     # Dodanie DataUtworzenia do PDF
+    c.setFillColor(green)
     c.drawString(50, y_position, f"Data Utworzenia: {data_utworzenia} (Data doręczenia)")
+    c.setFillColor(black)
     y_position -= 20
 
     # Dodanie RodzajDoreczenie do PDF
@@ -594,44 +587,47 @@ def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer
     pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
     c.setFont("Arial", 11)
 
-    margin = 48.2
-    available_width = width - 2 * margin
+    # Zawijanie nazwy pliku
+    text_wrap_width = 90  # Maksymalna liczba znaków dla nazwy pliku
 
     source_file_name = os.path.basename(source_file)
-    prefix = "Raport z pliku: "
-    wrapped_file_name = textwrap.wrap(source_file_name, width=int((available_width - c.stringWidth(prefix, "Arial", 11)) / c.stringWidth('f', "Arial", 11)))
-    text1 = f"{prefix}{wrapped_file_name[0]}"
-    wrapped_file_name = wrapped_file_name[1:]
-    wrapped_file_name = "\n".join(wrapped_file_name)
-    text1 += f"\n{wrapped_file_name}"
-    text2 = f"IdKartaEPO: {id_karta_epo}"
-    text3 = f"IdPrzesyłki: {id_przesylka}"
+    wrapped_file_name = textwrap.wrap(source_file_name, width=text_wrap_width)
 
     y_position = height - 30
 
-    for line in text1.split('\n'):
-        c.drawString(margin, y_position, line)
+    c.drawString(48.2, y_position, "Raport z pliku: ")
+    y_position -= 20
+
+    for line in wrapped_file_name:
+        c.drawString(48.2, y_position, line)
         y_position -= 20
 
-    for line in [text2, text3]:
-        c.drawString(margin, y_position, line)
-        y_position -= 20
-
+    # Dodanie pozostałych informacji do PDF
+    c.drawString(48.2, y_position, f"IdKartyEPO: {id_karta_epo}")
+    y_position -= 20
+    c.drawString(48.2, y_position, f"IdPrzesylki: {id_przesylka}")
     y_position -= 20
 
     c.drawString(50, y_position, f"Data Utworzenia: {creation_date}")
     y_position -= 20
 
+    c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
+    y_position -= 20
+
     c.drawString(50, y_position, f"Status Przesyłki: {status_przesylki}")
     y_position -= 20
 
-    c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data}")
+    c.setFillColor(orange)
+    c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data} (Data zwrotu po awizacji)")
+    c.setFillColor(black)
     y_position -= 20
 
     c.drawString(50, y_position, f"Brak Doręczenia: {brak_doreczenia}")
     y_position -= 20
 
+    c.setFillColor(orange)
     c.drawString(50, y_position, f"Data Awizo 1: {data_awizo1}")
+    c.setFillColor(black)
     y_position -= 20
 
    # c.drawString(50, y_position, f"Data Awizo 2: {data_awizo2}")
@@ -692,9 +688,9 @@ def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania
     y_position = height - 50
     c.drawString(50, y_position, f"Data Utworzenia: {data_utworzenia}")
     y_position -= 20
-    c.drawString(50, y_position, f"ID Karty EPO: {id_karty_epo}")
-    y_position -= 20
-    c.drawString(50, y_position, f"ID Przesyłki: {id_przesylki}")
+    c.setFillColor(red)
+    c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data} (Data zwrotu)")
+    c.setFillColor(black)
     y_position -= 20
 
     # Dodanie NumerNadania jako klikalny link do PDF
@@ -739,7 +735,6 @@ def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania
     y_position -= 20
     c.drawString(50, y_position, f"Do Rąk Własnych: {'Tak' if do_rak_wlasnych else 'Nie'}")
     y_position -= 20
-    c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data}")
     y_position -= 20
     c.drawString(50, y_position, f"Data Adnotacji: {data_adnotacji}")
     y_position -= 20
@@ -813,26 +808,79 @@ def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, n
 
     y_position -= 20
 
-    c.drawString(50, y_position, f"Data Utworzenia: {creation_date}")
+    c.drawString(50, y_position, f"Data Utworzenia: {creation_date} ")
     y_position -= 20
 
     if status_przesylki == 5:
         c.setFillColor(green)
         c.drawString(50, y_position, "Wydana (po awizo)")
-        c.setFillColor(black)  # Powrót do domyślnego koloru
+        c.setFillColor(black)
         y_position -= 20
     else:
         c.drawString(50, y_position, f"Status Przesyłki: {status_przesylki}")
         y_position -= 20
 
-    c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data}")
+
+    odbiorca_przesylki_map = {
+        0: "Adresat",
+        1: "Upoważniony Pracownik",
+        2: "Osoba uprawniona do reprezentacji",
+        3: "Pełnomocnik pocztowy",
+        4: "Przedstawiciel ustawowy adresata"
+    }
+
+    odbiorca_przesylki = int(odbiorca_przesylki)
+
+    if 0 <= odbiorca_przesylki <= 4:
+        odbiorca_przesylki_text = odbiorca_przesylki_map[odbiorca_przesylki]
+        c.drawString(50, y_position, f"Odbiorca Przesyłki: {odbiorca_przesylki_text}")
+        y_position -= 20
+
+
+    c.drawString(50, y_position, f"Imię i Nazwisko Odbiorcy: {imie_nazwisko_odbiorcy}")
     y_position -= 20
 
-    c.drawString(50, y_position, f"Brak Doręczenia: {brak_doreczenia}")
+    c.setFillColor(green)
+    c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data} (Data odbioru przesyłki)")
+    c.setFillColor(black)
     y_position -= 20
 
+    c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
+    y_position -= 20
+
+    #c.drawString(50, y_position, f"Brak Doręczenia: {brak_doreczenia}")
+    #y_position -= 20
+
+    awizo_miejsce_zawiadomienia_map = {
+        0: "Skrzynka Oddawcza",
+        1: "Drzwi",
+        2: "Skrytka Pocztowa",
+        3: "Inne widoczne miejsce",
+        4: "Biuro",
+        5: "Inne pomieszczenie",
+        6: "Inne widoczne miejsce przy wejściu na posesję"
+    }
+
+    awizo_miejsce_zawiadomienia = int(awizo_miejsce_zawiadomienia)
+
+    if 0 <= awizo_miejsce_zawiadomienia <= 6:
+        awizo_miejsce_zawiadomienia_text = awizo_miejsce_zawiadomienia_map[awizo_miejsce_zawiadomienia]
+        c.drawString(50, y_position, f"Awizo Miejsce Zawiadomienia: {awizo_miejsce_zawiadomienia_text}")
+        y_position -= 20
+    c.setFillColor(orange)
     c.drawString(50, y_position, f"Data Awizo 1: {data_awizo1}")
+    c.setFillColor(black)
     y_position -= 20
+
+    awizo_miejsce_przesylki_map = {
+        0: "placówka pocztowa",
+        1: "urząd gminy"
+    }
+    awizo_miejsce_przesylki = int(awizo_miejsce_przesylki)
+    if 0 <= awizo_miejsce_przesylki <= 1:
+        awizo_miejsce_przesylki_text = awizo_miejsce_przesylki_map[awizo_miejsce_przesylki]
+        c.drawString(50, y_position, f"Miejsce Przechowywania Przesyłki: {awizo_miejsce_przesylki_text}")
+        y_position -= 20
 
     tracking_url = f"https://sledzenie.poczta-polska.pl/?numer={numer_nadania}"
     c.drawString(50, y_position, "Nr. przesyłki: ")
@@ -871,6 +919,43 @@ def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, n
         c.drawString(50, y_position, f"{kod_pocztowy_nadawca} {miasto}")
     else:
         c.drawString(50, y_position, f"{miasto}")
+    y_position -= 20
+
+    c.drawString(50, y_position, "Wydający przesyłkę:")
+    c.line(50, y_position - 2, 150, y_position - 2)
+    y_position -= 20
+    # Dodanie nowych wartości do PDF
+    c.drawString(50, y_position, f"Data Podpisu: {data_podpisu}")
+    y_position -= 20
+
+    c.drawString(50, y_position, f"Data Zapisu: {data_zapisu}")
+    y_position -= 20
+
+    c.drawString(50, y_position, f"ID Operatora: {id_operatora}")
+    y_position -= 20
+
+    c.drawString(50, y_position, f"ID Urządzenia: {id_urzadzenia}")
+    y_position -= 20
+
+    c.drawString(50, y_position, f"Imię Wydającego: {imie_wydajacego}")
+    y_position -= 20
+
+    c.drawString(50, y_position, f"Nazwisko Wydającego: {nazwisko_wydajacego}")
+    y_position -= 20
+
+    c.drawString(50, y_position, f"ID Wydającego: {id_wydajacego}")
+    y_position -= 20
+
+    c.drawString(50, y_position, f"ID Placówki: {id_placowka}")
+    y_position -= 20
+
+    c.drawString(50, y_position, f"Nazwa Placówki: {nazwa_placowki}")
+    y_position -= 20
+
+    c.drawString(50, y_position, f"Adres Placówki: {adres_placowki}")
+    y_position -= 20
+
+    c.drawString(50, y_position, f"PNI Placówki: {pni_placowki}")
     y_position -= 20
 
     # Dodanie nowej strony dla obrazu
@@ -948,7 +1033,7 @@ def process_folder(folder_path):
 
 
 if __name__ == "__main__":
-    print("EPO wer.1.09 Autor: Tomasz Rekusz")
+    print("EPO wersja 1.10 Autor: Tomasz Rekusz")
     folder_path = os.path.abspath(os.getcwd())
     process_folder(folder_path)
     input("Naciśnij Enter, aby zakończyć...")
