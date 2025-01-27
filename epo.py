@@ -489,9 +489,8 @@ def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, dat
     # Dodanie RodzajDoreczenie do PDF
     if rodzaj_doreczenie == "DORECZENIE":
         c.setFillColor(green)
-        c.rect(45, y_position - 10, 200, 20, fill=True, stroke=False)
-        c.setFillColor(black)
-    c.drawString(50, y_position, f"Rodzaj Doreczenie: {rodzaj_doreczenie}")
+    c.drawString(50, y_position, f"Rodzaj Doręczenia: {rodzaj_doreczenie}")
+    c.setFillColor(black)  # Powrót do domyślnego koloru
     y_position -= 20
 
     # Dodanie PodmiotDoreczenia do PDF
@@ -817,8 +816,14 @@ def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, n
     c.drawString(50, y_position, f"Data Utworzenia: {creation_date}")
     y_position -= 20
 
-    c.drawString(50, y_position, f"Status Przesyłki: {status_przesylki}")
-    y_position -= 20
+    if status_przesylki == 5:
+        c.setFillColor(green)
+        c.drawString(50, y_position, "Wydana (po awizo)")
+        c.setFillColor(black)  # Powrót do domyślnego koloru
+        y_position -= 20
+    else:
+        c.drawString(50, y_position, f"Status Przesyłki: {status_przesylki}")
+        y_position -= 20
 
     c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data}")
     y_position -= 20
@@ -842,24 +847,30 @@ def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, n
     y_position -= 20
     c.drawString(50, y_position, f"{adresat}")
     y_position -= 20
-    c.drawString(50, y_position, f"Ulica: {ulica_adresat} {dom_adresat}")
+    c.drawString(50, y_position, f"{ulica_adresat} {dom_adresat}")
     y_position -= 20
     if lokal_adresat:
         c.drawString(50, y_position, f"Lokal: {lokal_adresat}")
         y_position -= 20
-    c.drawString(50, y_position, f"Miejscowość: {miejscowosc}")
+    c.drawString(50, y_position, f"{kod_pocztowy_adresat} {miejscowosc}")
     y_position -= 20
-    c.drawString(50, y_position, f"Kod Pocztowy: {kod_pocztowy_adresat}")
-    y_position -= 20
-
     c.drawString(50, y_position, "Nadawca:")
     c.line(50, y_position - 2, 100, y_position - 2)
     y_position -= 20
     c.drawString(50, y_position, f"{nazwa_jednostki}")
     y_position -= 20
-    c.drawString(50, y_position, f"Wydział: {wydzial}")
+    c.drawString(50, y_position, f"{ulica_nadawca} {dom_nadawca}")
     y_position -= 20
-    c.drawString(50, y_position, f"Miasto: {miasto}")
+    if lokal_adresat:
+        c.drawString(50, y_position, f"Lokal: {lokal_nadawca}")
+        y_position -= 20
+    if wydzial:
+        c.drawString(50, y_position, f"Wydział: {wydzial}")
+        y_position -= 20
+    if kod_pocztowy_nadawca:
+        c.drawString(50, y_position, f"{kod_pocztowy_nadawca} {miasto}")
+    else:
+        c.drawString(50, y_position, f"{miasto}")
     y_position -= 20
 
     # Dodanie nowej strony dla obrazu
@@ -870,7 +881,6 @@ def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, n
             podpis_obraz = base64.b64decode(podpis)
             image = ImageReader(BytesIO(podpis_obraz))
             c.drawImage(image, 100, height - 450, width=width - 200, height=350)
-            print("Podpis został dodany do PDF.")
         except Exception as e:
             print(f"Błąd dodawania podpisu do PDF: {e}")
     else:
@@ -912,16 +922,13 @@ def process_folder(folder_path):
 
            # Obsługa doreczenia po awizo
             creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, kod_pocztowy_nadawca, ulica_adresat, ulica_nadawca, dom_adresat, dom_nadawca, lokal_adresat, lokal_nadawca, miejscowosc, status_przesylki, systemowa_data, odbiorca_przesylki, imie_nazwisko_odbiorcy, podpis, brak_doreczenia, awizo_miejsce_przesylki, awizo_miejsce_zawiadomienia, data_awizo1, id_jednostka_ms, nazwa_jednostki, wydzial, miasto, data_podpisu, data_zapisu, id_operatora, id_urzadzenia, imie_wydajacego, nazwisko_wydajacego, id_wydajacego, id_placowka, nazwa_placowki, adres_placowki, pni_placowki, podpis_obraz_base64 = doreczenie_po_awizo_parse_xml_file(file_path)
-            print(f"Debug: nazwa_jednostki w process_folder przed save_to_pdf: {nazwa_jednostki}")
             if status_przesylki == 5:
                 doreczenia_po_zwrocie_count += 1
                 pdf_output_file = os.path.join(folder_path, f"{os.path.splitext(filename)[0]}_doreczenie_po_awizo.pdf")
                 if len(pdf_output_file) > MAX_FILENAME_LENGTH:
                     input()
                     return
-                print(f"Debug: nazwa_jednostki przed wywołaniem save_to_pdf: {nazwa_jednostki}")
                 doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, kod_pocztowy_nadawca, ulica_adresat, ulica_nadawca, dom_adresat, dom_nadawca, lokal_adresat, lokal_nadawca, miejscowosc, status_przesylki, systemowa_data, odbiorca_przesylki, imie_nazwisko_odbiorcy, podpis, brak_doreczenia, awizo_miejsce_przesylki, awizo_miejsce_zawiadomienia, data_awizo1, id_jednostka_ms, nazwa_jednostki, wydzial, miasto, data_podpisu, data_zapisu, id_operatora, id_urzadzenia, imie_wydajacego, nazwisko_wydajacego, id_wydajacego, id_placowka, nazwa_placowki, adres_placowki, pni_placowki, pdf_output_file, podpis_obraz_base64, file_path)
-                print(f"Debug: nazwa_jednostki po wywołaniu save_to_pdf: {nazwa_jednostki}")
 
             # Obsługa zwrotu
             data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot = zwrot_parse_xml_file(file_path)
@@ -941,6 +948,7 @@ def process_folder(folder_path):
 
 
 if __name__ == "__main__":
+    print("EPO wer.1.09 Autor: Tomasz Rekusz")
     folder_path = os.path.abspath(os.getcwd())
     process_folder(folder_path)
     input("Naciśnij Enter, aby zakończyć...")
