@@ -1,4 +1,4 @@
-# E-doręczenia Wizualizacja Potwierdzeń EPO dla Przesyłek PUH
+# E-doręczenia wizualizacja potwierdzeń EPO dla przesyłek PUH
 
 ## Autor
 Tomasz Rekusz
