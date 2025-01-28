@@ -119,7 +119,7 @@ def zwrot_awizowany_parse_xml_file(file_path):
         root = tree.getroot()
     except ET.ParseError as e:
         print(f"Błąd parsowania pliku XML: {e}")
-        return "Brak danych", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+        return "Brak danych", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
 
     ns = {
         'mstns': 'http://msepo.gov.pl/epo/XSD/KartaEPO.xsd',
@@ -140,7 +140,7 @@ def zwrot_awizowany_parse_xml_file(file_path):
         status_przesylki = int(status_przesylki_elem.text) if status_przesylki_elem is not None else 0
 
         if status_przesylki != 6:
-            return "Brak danych", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+            return "Brak danych", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
 
         id_przesylka_elem = przesylka_elem.find('.//mstns:IDPrzesylka', ns)
         id_przesylka = id_przesylka_elem.text if id_przesylka_elem is not None else "Brak danych"
@@ -195,10 +195,19 @@ def zwrot_awizowany_parse_xml_file(file_path):
         nadawca_ulica = ulica_nadawca
         nadawca_dom = dom_nadawca
         nadawca_lokal = lokal_nadawca
-    else:
-        id_przesylka = numer_nadania = data_nadania = adresat = kod_pocztowy_adresat = kod_pocztowy_nadawca = ulica_adresat = ulica_nadawca = dom_adresat = dom_nadawca = lokal_adresat = lokal_nadawca = adresat_miejscowosc = systemowa_data = brak_doreczenia = data_awizo1 = data_awizo2 = nadawca_nazwa = nadawca_wydzial = nadawca_miasto = nadawca_kod_pocztowy = nadawca_ulica = nadawca_dom = nadawca_lokal = "Brak danych"
 
-    return creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, ulica_adresat, dom_adresat, lokal_adresat, adresat_miejscowosc, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, nadawca_lokal
+        wydajacy_elem = przesylka_elem.find('.//mstns:Wydajacy', ns)
+        wydajacy_imie = wydajacy_elem.attrib.get('Imie', 'Brak danych')
+        wydajacy_nazwisko = wydajacy_elem.attrib.get('Nazwisko', 'Brak danych')
+        wydajacy_id = wydajacy_elem.attrib.get('Id', 'Brak danych')
+        wydajacy_id_placowka = wydajacy_elem.attrib.get('IDPlacowka', 'Brak danych')
+        wydajacy_nazwa_placowki = wydajacy_elem.attrib.get('NazwaPlacowki', 'Brak danych')
+        wydajacy_adres_placowki = wydajacy_elem.attrib.get('AdresPlacowki', 'Brak danych')
+        wydajacy_pni_placowki = wydajacy_elem.attrib.get('PNIPlacowki', 'Brak danych')
+    else:
+        id_przesylka = numer_nadania = data_nadania = adresat = kod_pocztowy_adresat = kod_pocztowy_nadawca = ulica_adresat = ulica_nadawca = dom_adresat = dom_nadawca = lokal_adresat = lokal_nadawca = adresat_miejscowosc = systemowa_data = brak_doreczenia = data_awizo1 = data_awizo2 = nadawca_nazwa = nadawca_wydzial = nadawca_miasto = nadawca_kod_pocztowy = nadawca_ulica = nadawca_dom = nadawca_lokal = wydajacy_imie = wydajacy_nazwisko = wydajacy_id = wydajacy_id_placowka = wydajacy_nazwa_placowki = wydajacy_adres_placowki = wydajacy_pni_placowki = "Brak danych"
+
+    return creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, ulica_adresat, dom_adresat, lokal_adresat, adresat_miejscowosc, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, nadawca_lokal, wydajacy_imie, wydajacy_nazwisko, wydajacy_id, wydajacy_id_placowka, wydajacy_nazwa_placowki, wydajacy_adres_placowki, wydajacy_pni_placowki
 
 def zwrot_parse_xml_file(file_path):
     try:
@@ -566,7 +575,7 @@ def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, dat
     except PermissionError:
         print(f"Błąd: Nie można zapisać pliku PDF '{output_file}'. Upewnij się, że plik nie jest otwarty w innym programie.")
 
-def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, ulica_adresat, dom_adresat, lokal_adresat, adresat_miejscowosc, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, nadawca_lokal, output_file, source_file):
+def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, ulica_adresat, dom_adresat, lokal_adresat, adresat_miejscowosc, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, nadawca_lokal, wydajacy_imie, wydajacy_nazwisko, wydajacy_id, wydajacy_id_placowka, wydajacy_nazwa_placowki, wydajacy_adres_placowki, wydajacy_pni_placowki, output_file, source_file):
     if status_przesylki != 6:
         return
 
@@ -635,7 +644,7 @@ def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer
         y_position -= 20
 
         c.drawString(50, y_position, "Adresat:")
-        c.line(50, y_position - 2, 100, y_position - 2)
+        c.line(50, y_position - 2, 89, y_position - 2)
         y_position -= 20
         c.drawString(50, y_position, f"{adresat}")
         y_position -= 20
@@ -664,6 +673,24 @@ def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer
             y_position -= 20
         y_position -= 20
         c.drawString(50, y_position, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
+        y_position -= 20
+        # Dodanie informacji o wydającym przesyłkę
+        c.drawString(50, y_position, "Wydający zwróconą przesyłkę:")
+        c.line(50, y_position - 2, 200, y_position - 2)
+        y_position -= 20
+        c.drawString(50, y_position, f"Imię wydającego: {wydajacy_imie}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Nazwisko wydającego: {wydajacy_nazwisko}")
+        y_position -= 20
+        c.drawString(50, y_position, f"ID wydającego: {wydajacy_id}")
+        y_position -= 20
+        c.drawString(50, y_position, f"ID Placówki: {wydajacy_id_placowka}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Nazwa Placówki: {wydajacy_nazwa_placowki}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Adres Placówki: {wydajacy_adres_placowki}")
+        y_position -= 20
+        c.drawString(50, y_position, f"PNI Placówki: {wydajacy_pni_placowki}")
         y_position -= 20
 
         c.save()
@@ -998,14 +1025,14 @@ def process_folder(folder_path):
                 doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, sygnatura, rodzaj, adnotacje, podmiot_doreczenia, tresc_adnotacji, pdf_output_file, file_path)
 
             # Obsługa zwrotu awizowanego
-            creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, ulica_adresat, dom_adresat, lokal_adresat, adresat_miejscowosc, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, nadawca_lokal = zwrot_awizowany_parse_xml_file(file_path)
+            creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, ulica_adresat, dom_adresat, lokal_adresat, adresat_miejscowosc, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, nadawca_lokal, wydajacy_imie, wydajacy_nazwisko, wydajacy_id, wydajacy_id_placowka, wydajacy_nazwa_placowki, wydajacy_adres_placowki, wydajacy_pni_placowki = zwrot_awizowany_parse_xml_file(file_path)
             if status_przesylki == 6:
                 zwrot_awizowany_count += 1
                 pdf_output_file = os.path.join(folder_path, f"{os.path.splitext(filename)[0]}_zwrot_awizowany.pdf")
                 if len(pdf_output_file) > MAX_FILENAME_LENGTH:
                     input()
                     return
-                zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, ulica_adresat, dom_adresat, lokal_adresat, adresat_miejscowosc, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, nadawca_lokal, pdf_output_file, file_path)
+                zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, ulica_adresat, dom_adresat, lokal_adresat, adresat_miejscowosc, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, nadawca_lokal, wydajacy_imie, wydajacy_nazwisko, wydajacy_id, wydajacy_id_placowka, wydajacy_nazwa_placowki, wydajacy_adres_placowki, wydajacy_pni_placowki, pdf_output_file, file_path)
 
 
            # Obsługa doreczenia po awizo
