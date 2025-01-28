@@ -20,9 +20,16 @@ Program generuje wizualiację Elektronicznego Potwierdzenia Odbioru (EPO) w form
 
 ## Wymagania do samodzielnego skompilowania
 - Python 3.x
-- Biblioteki: PyPDF2, ReportLab
 
-## Instalacja
-Aby zainstalować wymagane biblioteki, użyj poniższego polecenia:
-```bash
-pip install PyPDF2 ReportLab
+### Wbudowane biblioteki (w zestawie z Pythonem):
+- `os`
+- `base64`
+- `textwrap`
+- `xml.etree.ElementTree`
+- `io`
+- `webbrowser`
+
+### Biblioteki zewnętrzne (instalowane przez PIP):
+- `reportlab` (do generowania plików PDF)
+- `requests` (do wykonywania żądań HTTP)
+- `packaging` (do porównywania wersji)
