@@ -637,8 +637,10 @@ def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer
         c.setFillColor(black)
         y_position -= 20
 
-       # c.drawString(50, y_position, f"Data Awizo 2: {data_awizo2}")
-        #y_position -= 20
+        c.setFillColor(orange)
+        c.drawString(50, y_position, f"Data Awizo 2: {data_awizo2}")
+        c.setFillColor(black)
+        y_position -= 20
 
         tracking_url = f"https://sledzenie.poczta-polska.pl/?numer={numer_nadania}"
         c.drawString(50, y_position, "Nr. przesyłki: ")
@@ -983,7 +985,7 @@ def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, n
         c.save()
     except PermissionError:
         print(f"Błąd: Nie można zapisać pliku PDF '{output_file}'. Upewnij się, że plik nie jest otwarty w innym programie.")
-        
+
 def process_folder(folder_path):
     MAX_FILENAME_LENGTH = 240
 
