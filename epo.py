@@ -447,531 +447,543 @@ def doreczenie_po_awizo_parse_xml_file(file_path):
 def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, data_nadania, data_pisma, numer_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, id_karty_epo, id_przesylki, tryb_doreczenia, do_rak_wlasnych, sygnatura, rodzaj, adnotacje, podmiot_doreczenia, tresc_adnotacji, output_file, source_file):
     if rodzaj_doreczenie != "DORECZENIE":
         return
+    try:
+        c = canvas.Canvas(output_file, pagesize=A4)
+        width, height = A4
 
-    c = canvas.Canvas(output_file, pagesize=A4)
-    width, height = A4
+        # Rejestracja i ustawienie czcionki Arial
+        pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
+        c.setFont("Arial", 11)
 
-    # Rejestracja i ustawienie czcionki Arial
-    pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
-    c.setFont("Arial", 11)
+        # Zawijanie nazwy pliku
+        text_wrap_width = 90  # Maksymalna liczba znaków dla nazwy pliku
 
-    # Zawijanie nazwy pliku
-    text_wrap_width = 90  # Maksymalna liczba znaków dla nazwy pliku
+        source_file_name = os.path.basename(source_file)
+        wrapped_file_name = textwrap.wrap(source_file_name, width=text_wrap_width)
 
-    source_file_name = os.path.basename(source_file)
-    wrapped_file_name = textwrap.wrap(source_file_name, width=text_wrap_width)
+        y_position = height - 30
 
-    y_position = height - 30
-
-    c.drawString(48.2, y_position, "Raport z pliku: ")
-    y_position -= 20
-
-    for line in wrapped_file_name:
-        c.drawString(48.2, y_position, line)
+        c.drawString(48.2, y_position, "Raport z pliku: ")
         y_position -= 20
 
-    # Dodanie pozostałych informacji do PDF
-    c.drawString(48.2, y_position, f"IdKartyEPO: {id_karty_epo}")
-    y_position -= 20
-    c.drawString(48.2, y_position, f"IdPrzesylki: {id_przesylki}")
-    y_position -= 20
+        for line in wrapped_file_name:
+            c.drawString(48.2, y_position, line)
+            y_position -= 20
 
-    # Dodanie DataUtworzenia do PDF
-    c.setFillColor(green)
-    c.drawString(50, y_position, f"Data Utworzenia: {data_utworzenia} (Data doręczenia)")
-    c.setFillColor(black)
-    y_position -= 20
+        # Dodanie pozostałych informacji do PDF
+        c.drawString(48.2, y_position, f"IdKartyEPO: {id_karty_epo}")
+        y_position -= 20
+        c.drawString(48.2, y_position, f"IdPrzesylki: {id_przesylki}")
+        y_position -= 20
 
-    # Dodanie RodzajDoreczenie do PDF
-    if rodzaj_doreczenie == "DORECZENIE":
+        # Dodanie DataUtworzenia do PDF
         c.setFillColor(green)
-    c.drawString(50, y_position, f"Rodzaj Doręczenia: {rodzaj_doreczenie}")
-    c.setFillColor(black)  # Powrót do domyślnego koloru
-    y_position -= 20
-
-    # Dodanie PodmiotDoreczenia do PDF
-    if podmiot_doreczenia:
-        c.drawString(50, y_position, f"Podmiot Doreczenia: {podmiot_doreczenia}")
+        c.drawString(50, y_position, f"Data Utworzenia: {data_utworzenia} (Data doręczenia)")
+        c.setFillColor(black)
         y_position -= 20
 
-    # Dodanie TrescAdnotacji do PDF
-    if tresc_adnotacji:
-        c.drawString(50, y_position, f"Tresc Adnotacji: {tresc_adnotacji}")
+        # Dodanie RodzajDoreczenie do PDF
+        if rodzaj_doreczenie == "DORECZENIE":
+            c.setFillColor(green)
+        c.drawString(50, y_position, f"Rodzaj Doręczenia: {rodzaj_doreczenie}")
+        c.setFillColor(black)  # Powrót do domyślnego koloru
         y_position -= 20
 
-    # Dodanie TrybDoreczenia do PDF
-    tryb_doreczenia_text = f"Tryb doręczenia: {tryb_doreczenia.capitalize()}"
-    if do_rak_wlasnych:
-        tryb_doreczenia_text += " (do rąk własnych)"
-    c.drawString(50, y_position, tryb_doreczenia_text)
-    y_position -= 20
+        # Dodanie PodmiotDoreczenia do PDF
+        if podmiot_doreczenia:
+            c.drawString(50, y_position, f"Podmiot Doreczenia: {podmiot_doreczenia}")
+            y_position -= 20
 
-    # Dodanie Sygnatura do PDF
-    if sygnatura:
-        c.drawString(50, y_position, f"Sygnatura: {sygnatura}")
+        # Dodanie TrescAdnotacji do PDF
+        if tresc_adnotacji:
+            c.drawString(50, y_position, f"Tresc Adnotacji: {tresc_adnotacji}")
+            y_position -= 20
+
+        # Dodanie TrybDoreczenia do PDF
+        tryb_doreczenia_text = f"Tryb doręczenia: {tryb_doreczenia.capitalize()}"
+        if do_rak_wlasnych:
+            tryb_doreczenia_text += " (do rąk własnych)"
+        c.drawString(50, y_position, tryb_doreczenia_text)
         y_position -= 20
 
-    # Dodanie Rodzaj do PDF
-    if rodzaj:
-        c.drawString(50, y_position, f"Rodzaj: {rodzaj}")
+        # Dodanie Sygnatura do PDF
+        if sygnatura:
+            c.drawString(50, y_position, f"Sygnatura: {sygnatura}")
+            y_position -= 20
+
+        # Dodanie Rodzaj do PDF
+        if rodzaj:
+            c.drawString(50, y_position, f"Rodzaj: {rodzaj}")
+            y_position -= 20
+
+        # Dodanie Adnotacje do PDF
+        if adnotacje:
+            c.drawString(50, y_position, f"Adnotacje: {adnotacje}")
+            y_position -= 20
+
+        # Dodanie DataNadania do PDF
+        c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
         y_position -= 20
 
-    # Dodanie Adnotacje do PDF
-    if adnotacje:
-        c.drawString(50, y_position, f"Adnotacje: {adnotacje}")
+        # Dodanie DataPisma do PDF
+        c.drawString(50, y_position, f"Data Pisma: {data_pisma}")
         y_position -= 20
 
-    # Dodanie DataNadania do PDF
-    c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
-    y_position -= 20
+        # Dodanie NumerNadania jako klikalny link do PDF
+        tracking_url = f"https://sledzenie.poczta-polska.pl/?numer={numer_nadania}"
+        c.drawString(50, y_position, "Nr. przesyłki: ")
+        c.setFillColorRGB(0, 0, 1)  # Ustawienie koloru na niebieski
+        c.drawString(150, y_position, tracking_url)
+        c.linkURL(tracking_url, (150, y_position, 450, y_position + 15), relative=1, thickness=0, color=None)
+        c.setFillColor(black)  # Powrót do domyślnego koloru
+        y_position -= 20
 
-    # Dodanie DataPisma do PDF
-    c.drawString(50, y_position, f"Data Pisma: {data_pisma}")
-    y_position -= 20
+        # Dodanie Adresat do PDF
+        c.drawString(50, y_position, "Adresat:")
+        c.line(50, y_position - 2, 100, y_position - 2)  # Podkreślenie tekstu
+        y_position -= 20
+        c.drawString(50, y_position, f"{adresat_nazwa}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Ulica: {adresat_ulica} {adresat_numer_domu}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Miejscowość: {adresat_miejscowosc}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Kod Pocztowy: {adresat_kod_pocztowy}")
+        y_position -= 20
 
-    # Dodanie NumerNadania jako klikalny link do PDF
-    tracking_url = f"https://sledzenie.poczta-polska.pl/?numer={numer_nadania}"
-    c.drawString(50, y_position, "Nr. przesyłki: ")
-    c.setFillColorRGB(0, 0, 1)  # Ustawienie koloru na niebieski
-    c.drawString(150, y_position, tracking_url)
-    c.linkURL(tracking_url, (150, y_position, 450, y_position + 15), relative=1, thickness=0, color=None)
-    c.setFillColor(black)  # Powrót do domyślnego koloru
-    y_position -= 20
+        # Dodanie Nadawca do PDF
+        c.drawString(50, y_position, "Nadawca:")
+        c.line(50, y_position - 2, 100, y_position - 2)  # Podkreślenie tekstu
+        y_position -= 20
+        c.drawString(50, y_position, f"{nadawca_nazwa}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Nadawca cd.: {nadawca_nazwa2}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Ulica: {nadawca_ulica} {nadawca_numer_domu}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Miejscowość: {nadawca_miejscowosc}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
+        y_position -= 20
 
-    # Dodanie Adresat do PDF
-    c.drawString(50, y_position, "Adresat:")
-    c.line(50, y_position - 2, 100, y_position - 2)  # Podkreślenie tekstu
-    y_position -= 20
-    c.drawString(50, y_position, f"{adresat_nazwa}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Ulica: {adresat_ulica} {adresat_numer_domu}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Miejscowość: {adresat_miejscowosc}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Kod Pocztowy: {adresat_kod_pocztowy}")
-    y_position -= 20
+        # Dodanie nowej strony dla obrazu
+        c.showPage()
 
-    # Dodanie Nadawca do PDF
-    c.drawString(50, y_position, "Nadawca:")
-    c.line(50, y_position - 2, 100, y_position - 2)  # Podkreślenie tekstu
-    y_position -= 20
-    c.drawString(50, y_position, f"{nadawca_nazwa}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Nadawca cd.: {nadawca_nazwa2}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Ulica: {nadawca_ulica} {nadawca_numer_domu}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Miejscowość: {nadawca_miejscowosc}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
-    y_position -= 20
+        # Dekodowanie i dodanie PodpisObraz do PDF
+        if podpis_obraz:
+            try:
+                podpis_obraz_data = base64.b64decode(podpis_obraz)
+                image = ImageReader(BytesIO(podpis_obraz_data))
+                c.drawImage(image, 100, height - 400, width=width - 200, height=400)
+            except Exception as e:
+                print(f"Błąd dekodowania obrazu: {e}")
 
-    # Dodanie nowej strony dla obrazu
-    c.showPage()
-
-    # Dekodowanie i dodanie PodpisObraz do PDF
-    if podpis_obraz:
-        try:
-            podpis_obraz_data = base64.b64decode(podpis_obraz)
-            image = ImageReader(BytesIO(podpis_obraz_data))
-            c.drawImage(image, 100, height - 400, width=width - 200, height=400)
-        except Exception as e:
-            print(f"Błąd dekodowania obrazu: {e}")
-
-    c.save()
+        c.save()
+    except PermissionError:
+        print(f"Błąd: Nie można zapisać pliku PDF '{output_file}'. Upewnij się, że plik nie jest otwarty w innym programie.")
 
 def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, ulica_adresat, dom_adresat, lokal_adresat, adresat_miejscowosc, status_przesylki, systemowa_data, brak_doreczenia, data_awizo1, data_awizo2, nadawca_nazwa, nadawca_wydzial, nadawca_miasto, nadawca_kod_pocztowy, nadawca_ulica, nadawca_dom, nadawca_lokal, output_file, source_file):
     if status_przesylki != 6:
         return
 
-    c = canvas.Canvas(output_file, pagesize=A4)
-    width, height = A4
+    try:
+        c = canvas.Canvas(output_file, pagesize=A4)
+        width, height = A4
 
-    # Rejestracja i ustawienie czcionki Arial
-    pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
-    c.setFont("Arial", 11)
+        # Rejestracja i ustawienie czcionki Arial
+        pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
+        c.setFont("Arial", 11)
 
-    # Zawijanie nazwy pliku
-    text_wrap_width = 80  # Maksymalna liczba znaków dla nazwy pliku
+        # Zawijanie nazwy pliku
+        text_wrap_width = 80  # Maksymalna liczba znaków dla nazwy pliku
 
-    source_file_name = os.path.basename(source_file)
-    wrapped_file_name = textwrap.wrap(source_file_name, width=text_wrap_width)
+        source_file_name = os.path.basename(source_file)
+        wrapped_file_name = textwrap.wrap(source_file_name, width=text_wrap_width)
 
-    y_position = height - 30
+        y_position = height - 30
 
-    c.drawString(48.2, y_position, "Raport z pliku: ")
-    y_position -= 20
-
-    for line in wrapped_file_name:
-        c.drawString(48.2, y_position, line)
+        c.drawString(48.2, y_position, "Raport z pliku: ")
         y_position -= 20
 
-    # Dodanie pozostałych informacji do PDF
-    c.drawString(48.2, y_position, f"IdKartyEPO: {id_karta_epo}")
-    y_position -= 20
-    c.drawString(48.2, y_position, f"IdPrzesylki: {id_przesylka}")
-    y_position -= 20
+        for line in wrapped_file_name:
+            c.drawString(48.2, y_position, line)
+            y_position -= 20
 
-    c.drawString(50, y_position, f"Data Utworzenia: {creation_date}")
-    y_position -= 20
-
-    c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
-    y_position -= 20
-
-    c.drawString(50, y_position, f"Status Przesyłki: {status_przesylki}")
-    y_position -= 20
-
-    c.setFillColor(orange)
-    c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data} (Data zwrotu po awizacji)")
-    c.setFillColor(black)
-    y_position -= 20
-
-    c.drawString(50, y_position, f"Brak Doręczenia: {brak_doreczenia}")
-    y_position -= 20
-
-    c.setFillColor(orange)
-    c.drawString(50, y_position, f"Data Awizo 1: {data_awizo1}")
-    c.setFillColor(black)
-    y_position -= 20
-
-   # c.drawString(50, y_position, f"Data Awizo 2: {data_awizo2}")
-    #y_position -= 20
-
-    tracking_url = f"https://sledzenie.poczta-polska.pl/?numer={numer_nadania}"
-    c.drawString(50, y_position, "Nr. przesyłki: ")
-    c.setFillColorRGB(0, 0, 1)
-    c.drawString(150, y_position, tracking_url)
-    c.linkURL(tracking_url, (150, y_position, 450, y_position + 15), relative=1, thickness=0, color=None)
-    c.setFillColor(black)
-    y_position -= 20
-
-    c.drawString(50, y_position, "Adresat:")
-    c.line(50, y_position - 2, 100, y_position - 2)
-    y_position -= 20
-    c.drawString(50, y_position, f"{adresat}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Ulica: {ulica_adresat} {dom_adresat}")
-    if lokal_adresat:
-        c.drawString(50, y_position, f"Lokal: {lokal_adresat}")
+        # Dodanie pozostałych informacji do PDF
+        c.drawString(48.2, y_position, f"IdKartyEPO: {id_karta_epo}")
         y_position -= 20
-    y_position -= 20
-    c.drawString(50, y_position, f"Miejscowość: {adresat_miejscowosc}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Kod Pocztowy: {kod_pocztowy_adresat}")
-    y_position -= 20
-
-    c.drawString(50, y_position, "Nadawca:")
-    c.line(50, y_position - 2, 100, y_position - 2)
-    y_position -= 20
-    c.drawString(50, y_position, f"{nadawca_nazwa}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Wydział: {nadawca_wydzial}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Miasto: {nadawca_miasto}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Ulica: {nadawca_ulica} {nadawca_dom}")
-    if nadawca_lokal:
-        c.drawString(50, y_position, f"Lokal: {nadawca_lokal}")
-        y_position -= 20
-    y_position -= 20
-    c.drawString(50, y_position, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
-    y_position -= 20
-
-    c.save()
-
-def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot, output_file):
-    c = canvas.Canvas(output_file, pagesize=A4)
-    width, height = A4
-
-    pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
-    c.setFont("Arial", 11)
-
-    margin = 48.2
-    available_width = width - 2 * margin
-
-    y_position = height - 50
-    c.drawString(50, y_position, f"Data Utworzenia: {data_utworzenia}")
-    y_position -= 20
-    c.setFillColor(red)
-    c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data} (Data zwrotu)")
-    c.setFillColor(black)
-    y_position -= 20
-
-    # Dodanie NumerNadania jako klikalny link do PDF
-    tracking_url = f"https://sledzenie.poczta-polska.pl/?numer={numer_nadania}"
-    c.drawString(50, y_position, "Nr. przesyłki: ")
-    c.setFillColorRGB(0, 0, 1)  # Ustawienie koloru na niebieski
-    c.drawString(150, y_position, tracking_url)
-    c.linkURL(tracking_url, (150, y_position, 450, y_position + 15), relative=1, thickness=0, color=None)
-    c.setFillColor(black)  # Powrót do domyślnego koloru
-    y_position -= 20
-
-    c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
-    y_position -= 20
-
-    c.drawString(50, y_position, "Adresat:")
-    c.line(50, y_position - 2, 100, y_position - 2)
-    y_position -= 20
-    c.drawString(50, y_position, f"Nazwa: {adresat_nazwa}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Ulica: {adresat_ulica} {adresat_numer_domu}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Miejscowość: {adresat_miejscowosc}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Kod Pocztowy: {adresat_kod_pocztowy}")
-    y_position -= 20
-
-    c.drawString(50, y_position, "Nadawca:")
-    c.line(50, y_position - 2, 100, y_position - 2)
-    y_position -= 20
-    c.drawString(50, y_position, f"Nazwa: {nadawca_nazwa}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Nazwa cd.: {nadawca_nazwa2}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Ulica: {nadawca_ulica} {nadawca_numer_domu}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Miejscowość: {nadawca_miejscowosc}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
-    y_position -= 20
-
-    c.drawString(50, y_position, f"Tryb Doręczenia: {tryb_doreczenia}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Do Rąk Własnych: {'Tak' if do_rak_wlasnych else 'Nie'}")
-    y_position -= 20
-    y_position -= 20
-    c.drawString(50, y_position, f"Data Adnotacji: {data_adnotacji}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Data Zdarzenia: {data_zdarzenia}")
-    y_position -= 20
-
-    c.drawString(50, y_position, "Operator:")
-    c.line(50, y_position - 2, 100, y_position - 2)
-    y_position -= 20
-    c.drawString(50, y_position, f"Imię: {operator_imie}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Nazwisko: {operator_nazwisko}")
-    y_position -= 20
-    c.drawString(50, y_position, f"ID Operatora: {operator_id}")
-    y_position -= 20
-
-    c.drawString(50, y_position, "Placówka Pocztowa:")
-    c.line(50, y_position - 2, 150, y_position - 2)
-    y_position -= 20
-    c.drawString(50, y_position, f"Nazwa: {placowka_nazwa}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Ulica: {placowka_ulica} {placowka_numer_domu}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Miejscowość: {placowka_miejscowosc}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Kod Pocztowy: {placowka_kod_pocztowy}")
-    y_position -= 20
-    c.drawString(50, y_position, f"Kraj: {placowka_kraj}")
-    y_position -= 20
-
-    c.drawString(50, y_position, f"Powód Zwrotu: {powod_zwrotu}")
-    y_position -= 20
-
-    c.setFillColor(red)
-    c.drawString(50, y_position, f"Treść Adnotacji: {tresc_adnotacji}")
-    c.setFillColor(black)
-    y_position -= 20
-
-    c.save()
-
-def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, kod_pocztowy_nadawca, ulica_adresat, ulica_nadawca, dom_adresat, dom_nadawca, lokal_adresat, lokal_nadawca, miejscowosc, status_przesylki, systemowa_data, odbiorca_przesylki, imie_nazwisko_odbiorcy, podpis, brak_doreczenia, awizo_miejsce_przesylki, awizo_miejsce_zawiadomienia, data_awizo1, id_jednostka_ms, nazwa_jednostki, wydzial, miasto, data_podpisu, data_zapisu, id_operatora, id_urzadzenia, imie_wydajacego, nazwisko_wydajacego, id_wydajacego, id_placowka, nazwa_placowki, adres_placowki, pni_placowki, output_file, podpis_obraz_base64, source_file):
-
-    c = canvas.Canvas(output_file, pagesize=A4)
-    width, height = A4
-
-    pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
-    c.setFont("Arial", 11)
-
-    # Zawijanie nazwy pliku
-    text_wrap_width = 90  # Maksymalna liczba znaków dla nazwy pliku
-
-    source_file_name = os.path.basename(source_file)
-    wrapped_file_name = textwrap.wrap(source_file_name, width=text_wrap_width)
-
-    y_position = height - 30
-
-    c.drawString(48.2, y_position, "Raport z pliku: ")
-    y_position -= 20
-
-    for line in wrapped_file_name:
-        c.drawString(48.2, y_position, line)
+        c.drawString(48.2, y_position, f"IdPrzesylki: {id_przesylka}")
         y_position -= 20
 
-    # Dodanie pozostałych informacji do PDF
-    c.drawString(48.2, y_position, f"IdKartyEPO: {id_karta_epo}")
-    y_position -= 20
-    c.drawString(48.2, y_position, f"IdPrzesylki: {id_przesylka}")
-    y_position -= 20
-
-    c.drawString(50, y_position, f"Data Utworzenia: {creation_date} ")
-    y_position -= 20
-
-    if status_przesylki == 5:
-        c.setFillColor(green)
-        c.drawString(50, y_position, "Wydana (po awizo)")
-        c.setFillColor(black)
+        c.drawString(50, y_position, f"Data Utworzenia: {creation_date}")
         y_position -= 20
-    else:
+
+        c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
+        y_position -= 20
+
         c.drawString(50, y_position, f"Status Przesyłki: {status_przesylki}")
         y_position -= 20
 
-
-    odbiorca_przesylki_map = {
-        0: "Adresat",
-        1: "Upoważniony Pracownik",
-        2: "Osoba uprawniona do reprezentacji",
-        3: "Pełnomocnik pocztowy",
-        4: "Przedstawiciel ustawowy adresata"
-    }
-
-    odbiorca_przesylki = int(odbiorca_przesylki)
-
-    if 0 <= odbiorca_przesylki <= 4:
-        odbiorca_przesylki_text = odbiorca_przesylki_map[odbiorca_przesylki]
-        c.drawString(50, y_position, f"Odbiorca Przesyłki: {odbiorca_przesylki_text}")
+        c.setFillColor(orange)
+        c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data} (Data zwrotu po awizacji)")
+        c.setFillColor(black)
         y_position -= 20
 
-
-    c.drawString(50, y_position, f"Imię i Nazwisko Odbiorcy: {imie_nazwisko_odbiorcy}")
-    y_position -= 20
-
-    c.setFillColor(green)
-    c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data} (Data odbioru przesyłki)")
-    c.setFillColor(black)
-    y_position -= 20
-
-    c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
-    y_position -= 20
-
-    #c.drawString(50, y_position, f"Brak Doręczenia: {brak_doreczenia}")
-    #y_position -= 20
-
-    awizo_miejsce_zawiadomienia_map = {
-        0: "Skrzynka Oddawcza",
-        1: "Drzwi",
-        2: "Skrytka Pocztowa",
-        3: "Inne widoczne miejsce",
-        4: "Biuro",
-        5: "Inne pomieszczenie",
-        6: "Inne widoczne miejsce przy wejściu na posesję"
-    }
-
-    awizo_miejsce_zawiadomienia = int(awizo_miejsce_zawiadomienia)
-
-    if 0 <= awizo_miejsce_zawiadomienia <= 6:
-        awizo_miejsce_zawiadomienia_text = awizo_miejsce_zawiadomienia_map[awizo_miejsce_zawiadomienia]
-        c.drawString(50, y_position, f"Awizo Miejsce Zawiadomienia: {awizo_miejsce_zawiadomienia_text}")
-        y_position -= 20
-    c.setFillColor(orange)
-    c.drawString(50, y_position, f"Data Awizo 1: {data_awizo1}")
-    c.setFillColor(black)
-    y_position -= 20
-
-    awizo_miejsce_przesylki_map = {
-        0: "placówka pocztowa",
-        1: "urząd gminy"
-    }
-    awizo_miejsce_przesylki = int(awizo_miejsce_przesylki)
-    if 0 <= awizo_miejsce_przesylki <= 1:
-        awizo_miejsce_przesylki_text = awizo_miejsce_przesylki_map[awizo_miejsce_przesylki]
-        c.drawString(50, y_position, f"Miejsce Przechowywania Przesyłki: {awizo_miejsce_przesylki_text}")
+        c.drawString(50, y_position, f"Brak Doręczenia: {brak_doreczenia}")
         y_position -= 20
 
-    tracking_url = f"https://sledzenie.poczta-polska.pl/?numer={numer_nadania}"
-    c.drawString(50, y_position, "Nr. przesyłki: ")
-    c.setFillColorRGB(0, 0, 1)
-    c.drawString(150, y_position, tracking_url)
-    c.linkURL(tracking_url, (150, y_position, 450, y_position + 15), relative=1, thickness=0, color=None)
-    c.setFillColor(black)
-    y_position -= 20
-
-    c.drawString(50, y_position, "Adresat:")
-    c.line(50, y_position - 2, 100, y_position - 2)
-    y_position -= 20
-    c.drawString(50, y_position, f"{adresat}")
-    y_position -= 20
-    c.drawString(50, y_position, f"{ulica_adresat} {dom_adresat}")
-    y_position -= 20
-    if lokal_adresat:
-        c.drawString(50, y_position, f"Lokal: {lokal_adresat}")
+        c.setFillColor(orange)
+        c.drawString(50, y_position, f"Data Awizo 1: {data_awizo1}")
+        c.setFillColor(black)
         y_position -= 20
-    c.drawString(50, y_position, f"{kod_pocztowy_adresat} {miejscowosc}")
-    y_position -= 20
-    c.drawString(50, y_position, "Nadawca:")
-    c.line(50, y_position - 2, 100, y_position - 2)
-    y_position -= 20
-    c.drawString(50, y_position, f"{nazwa_jednostki}")
-    y_position -= 20
-    c.drawString(50, y_position, f"{ulica_nadawca} {dom_nadawca}")
-    y_position -= 20
-    if lokal_adresat:
-        c.drawString(50, y_position, f"Lokal: {lokal_nadawca}")
+
+       # c.drawString(50, y_position, f"Data Awizo 2: {data_awizo2}")
+        #y_position -= 20
+
+        tracking_url = f"https://sledzenie.poczta-polska.pl/?numer={numer_nadania}"
+        c.drawString(50, y_position, "Nr. przesyłki: ")
+        c.setFillColorRGB(0, 0, 1)
+        c.drawString(150, y_position, tracking_url)
+        c.linkURL(tracking_url, (150, y_position, 450, y_position + 15), relative=1, thickness=0, color=None)
+        c.setFillColor(black)
         y_position -= 20
-    if wydzial:
-        c.drawString(50, y_position, f"Wydział: {wydzial}")
+
+        c.drawString(50, y_position, "Adresat:")
+        c.line(50, y_position - 2, 100, y_position - 2)
         y_position -= 20
-    if kod_pocztowy_nadawca:
-        c.drawString(50, y_position, f"{kod_pocztowy_nadawca} {miasto}")
-    else:
-        c.drawString(50, y_position, f"{miasto}")
-    y_position -= 20
+        c.drawString(50, y_position, f"{adresat}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Ulica: {ulica_adresat} {dom_adresat}")
+        if lokal_adresat:
+            c.drawString(50, y_position, f"Lokal: {lokal_adresat}")
+            y_position -= 20
+        y_position -= 20
+        c.drawString(50, y_position, f"Miejscowość: {adresat_miejscowosc}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Kod Pocztowy: {kod_pocztowy_adresat}")
+        y_position -= 20
 
-    c.drawString(50, y_position, "Wydający przesyłkę:")
-    c.line(50, y_position - 2, 150, y_position - 2)
-    y_position -= 20
-    # Dodanie nowych wartości do PDF
-    c.drawString(50, y_position, f"Data Podpisu: {data_podpisu}")
-    y_position -= 20
+        c.drawString(50, y_position, "Nadawca:")
+        c.line(50, y_position - 2, 100, y_position - 2)
+        y_position -= 20
+        c.drawString(50, y_position, f"{nadawca_nazwa}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Wydział: {nadawca_wydzial}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Miasto: {nadawca_miasto}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Ulica: {nadawca_ulica} {nadawca_dom}")
+        if nadawca_lokal:
+            c.drawString(50, y_position, f"Lokal: {nadawca_lokal}")
+            y_position -= 20
+        y_position -= 20
+        c.drawString(50, y_position, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
+        y_position -= 20
 
-    c.drawString(50, y_position, f"Data Zapisu: {data_zapisu}")
-    y_position -= 20
+        c.save()
+    except PermissionError:
+        print(f"Błąd: Nie można zapisać pliku PDF '{output_file}'. Upewnij się, że plik nie jest otwarty w innym programie.")
 
-    c.drawString(50, y_position, f"ID Operatora: {id_operatora}")
-    y_position -= 20
+def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot, output_file):
 
-    c.drawString(50, y_position, f"ID Urządzenia: {id_urzadzenia}")
-    y_position -= 20
+    try:
+        c = canvas.Canvas(output_file, pagesize=A4)
+        width, height = A4
 
-    c.drawString(50, y_position, f"Imię Wydającego: {imie_wydajacego}")
-    y_position -= 20
+        pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
+        c.setFont("Arial", 11)
 
-    c.drawString(50, y_position, f"Nazwisko Wydającego: {nazwisko_wydajacego}")
-    y_position -= 20
+        margin = 48.2
+        available_width = width - 2 * margin
 
-    c.drawString(50, y_position, f"ID Wydającego: {id_wydajacego}")
-    y_position -= 20
+        y_position = height - 50
+        c.drawString(50, y_position, f"Data Utworzenia: {data_utworzenia}")
+        y_position -= 20
+        c.setFillColor(red)
+        c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data} (Data zwrotu)")
+        c.setFillColor(black)
+        y_position -= 20
 
-    c.drawString(50, y_position, f"ID Placówki: {id_placowka}")
-    y_position -= 20
+        # Dodanie NumerNadania jako klikalny link do PDF
+        tracking_url = f"https://sledzenie.poczta-polska.pl/?numer={numer_nadania}"
+        c.drawString(50, y_position, "Nr. przesyłki: ")
+        c.setFillColorRGB(0, 0, 1)  # Ustawienie koloru na niebieski
+        c.drawString(150, y_position, tracking_url)
+        c.linkURL(tracking_url, (150, y_position, 450, y_position + 15), relative=1, thickness=0, color=None)
+        c.setFillColor(black)  # Powrót do domyślnego koloru
+        y_position -= 20
 
-    c.drawString(50, y_position, f"Nazwa Placówki: {nazwa_placowki}")
-    y_position -= 20
+        c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
+        y_position -= 20
 
-    c.drawString(50, y_position, f"Adres Placówki: {adres_placowki}")
-    y_position -= 20
+        c.drawString(50, y_position, "Adresat:")
+        c.line(50, y_position - 2, 100, y_position - 2)
+        y_position -= 20
+        c.drawString(50, y_position, f"Nazwa: {adresat_nazwa}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Ulica: {adresat_ulica} {adresat_numer_domu}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Miejscowość: {adresat_miejscowosc}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Kod Pocztowy: {adresat_kod_pocztowy}")
+        y_position -= 20
 
-    c.drawString(50, y_position, f"PNI Placówki: {pni_placowki}")
-    y_position -= 20
+        c.drawString(50, y_position, "Nadawca:")
+        c.line(50, y_position - 2, 100, y_position - 2)
+        y_position -= 20
+        c.drawString(50, y_position, f"Nazwa: {nadawca_nazwa}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Nazwa cd.: {nadawca_nazwa2}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Ulica: {nadawca_ulica} {nadawca_numer_domu}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Miejscowość: {nadawca_miejscowosc}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
+        y_position -= 20
 
-    # Dodanie nowej strony dla obrazu
-    c.showPage()
-    # Dekodowanie i dodanie podpisu do PDF
-    if podpis:
-        try:
-            podpis_obraz = base64.b64decode(podpis)
-            image = ImageReader(BytesIO(podpis_obraz))
-            c.drawImage(image, 100, height - 450, width=width - 200, height=350)
-        except Exception as e:
-            print(f"Błąd dodawania podpisu do PDF: {e}")
-    else:
-        print("Brak podpisu do dodania do PDF.")
-    c.save()
+        c.drawString(50, y_position, f"Tryb Doręczenia: {tryb_doreczenia}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Do Rąk Własnych: {'Tak' if do_rak_wlasnych else 'Nie'}")
+        y_position -= 20
+        y_position -= 20
+        c.drawString(50, y_position, f"Data Adnotacji: {data_adnotacji}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Data Zdarzenia: {data_zdarzenia}")
+        y_position -= 20
 
+        c.drawString(50, y_position, "Operator:")
+        c.line(50, y_position - 2, 100, y_position - 2)
+        y_position -= 20
+        c.drawString(50, y_position, f"Imię: {operator_imie}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Nazwisko: {operator_nazwisko}")
+        y_position -= 20
+        c.drawString(50, y_position, f"ID Operatora: {operator_id}")
+        y_position -= 20
+
+        c.drawString(50, y_position, "Placówka Pocztowa:")
+        c.line(50, y_position - 2, 150, y_position - 2)
+        y_position -= 20
+        c.drawString(50, y_position, f"Nazwa: {placowka_nazwa}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Ulica: {placowka_ulica} {placowka_numer_domu}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Miejscowość: {placowka_miejscowosc}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Kod Pocztowy: {placowka_kod_pocztowy}")
+        y_position -= 20
+        c.drawString(50, y_position, f"Kraj: {placowka_kraj}")
+        y_position -= 20
+
+        c.drawString(50, y_position, f"Powód Zwrotu: {powod_zwrotu}")
+        y_position -= 20
+
+        c.setFillColor(red)
+        c.drawString(50, y_position, f"Treść Adnotacji: {tresc_adnotacji}")
+        c.setFillColor(black)
+        y_position -= 20
+
+        c.save()
+    except PermissionError:
+        print(f"Błąd: Nie można zapisać pliku PDF '{output_file}'. Upewnij się, że plik nie jest otwarty w innym programie.")
+
+def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, kod_pocztowy_nadawca, ulica_adresat, ulica_nadawca, dom_adresat, dom_nadawca, lokal_adresat, lokal_nadawca, miejscowosc, status_przesylki, systemowa_data, odbiorca_przesylki, imie_nazwisko_odbiorcy, podpis, brak_doreczenia, awizo_miejsce_przesylki, awizo_miejsce_zawiadomienia, data_awizo1, id_jednostka_ms, nazwa_jednostki, wydzial, miasto, data_podpisu, data_zapisu, id_operatora, id_urzadzenia, imie_wydajacego, nazwisko_wydajacego, id_wydajacego, id_placowka, nazwa_placowki, adres_placowki, pni_placowki, output_file, podpis_obraz_base64, source_file):
+
+    try:
+        c = canvas.Canvas(output_file, pagesize=A4)
+        width, height = A4
+
+        pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
+        c.setFont("Arial", 11)
+
+        # Zawijanie nazwy pliku
+        text_wrap_width = 90  # Maksymalna liczba znaków dla nazwy pliku
+
+        source_file_name = os.path.basename(source_file)
+        wrapped_file_name = textwrap.wrap(source_file_name, width=text_wrap_width)
+
+        y_position = height - 30
+
+        c.drawString(48.2, y_position, "Raport z pliku: ")
+        y_position -= 20
+
+        for line in wrapped_file_name:
+            c.drawString(48.2, y_position, line)
+            y_position -= 20
+
+        # Dodanie pozostałych informacji do PDF
+        c.drawString(48.2, y_position, f"IdKartyEPO: {id_karta_epo}")
+        y_position -= 20
+        c.drawString(48.2, y_position, f"IdPrzesylki: {id_przesylka}")
+        y_position -= 20
+
+        c.drawString(50, y_position, f"Data Utworzenia: {creation_date} ")
+        y_position -= 20
+
+        if status_przesylki == 5:
+            c.setFillColor(green)
+            c.drawString(50, y_position, "Wydana (po awizo)")
+            c.setFillColor(black)
+            y_position -= 20
+        else:
+            c.drawString(50, y_position, f"Status Przesyłki: {status_przesylki}")
+            y_position -= 20
+
+
+        odbiorca_przesylki_map = {
+            0: "Adresat",
+            1: "Upoważniony Pracownik",
+            2: "Osoba uprawniona do reprezentacji",
+            3: "Pełnomocnik pocztowy",
+            4: "Przedstawiciel ustawowy adresata"
+        }
+
+        odbiorca_przesylki = int(odbiorca_przesylki)
+
+        if 0 <= odbiorca_przesylki <= 4:
+            odbiorca_przesylki_text = odbiorca_przesylki_map[odbiorca_przesylki]
+            c.drawString(50, y_position, f"Odbiorca Przesyłki: {odbiorca_przesylki_text}")
+            y_position -= 20
+
+
+        c.drawString(50, y_position, f"Imię i Nazwisko Odbiorcy: {imie_nazwisko_odbiorcy}")
+        y_position -= 20
+
+        c.setFillColor(green)
+        c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data} (Data odbioru przesyłki)")
+        c.setFillColor(black)
+        y_position -= 20
+
+        c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
+        y_position -= 20
+
+        #c.drawString(50, y_position, f"Brak Doręczenia: {brak_doreczenia}")
+        #y_position -= 20
+
+        awizo_miejsce_zawiadomienia_map = {
+            0: "Skrzynka Oddawcza",
+            1: "Drzwi",
+            2: "Skrytka Pocztowa",
+            3: "Inne widoczne miejsce",
+            4: "Biuro",
+            5: "Inne pomieszczenie",
+            6: "Inne widoczne miejsce przy wejściu na posesję"
+        }
+
+        awizo_miejsce_zawiadomienia = int(awizo_miejsce_zawiadomienia)
+
+        if 0 <= awizo_miejsce_zawiadomienia <= 6:
+            awizo_miejsce_zawiadomienia_text = awizo_miejsce_zawiadomienia_map[awizo_miejsce_zawiadomienia]
+            c.drawString(50, y_position, f"Awizo Miejsce Zawiadomienia: {awizo_miejsce_zawiadomienia_text}")
+            y_position -= 20
+        c.setFillColor(orange)
+        c.drawString(50, y_position, f"Data Awizo 1: {data_awizo1}")
+        c.setFillColor(black)
+        y_position -= 20
+
+        awizo_miejsce_przesylki_map = {
+            0: "placówka pocztowa",
+            1: "urząd gminy"
+        }
+        awizo_miejsce_przesylki = int(awizo_miejsce_przesylki)
+        if 0 <= awizo_miejsce_przesylki <= 1:
+            awizo_miejsce_przesylki_text = awizo_miejsce_przesylki_map[awizo_miejsce_przesylki]
+            c.drawString(50, y_position, f"Miejsce Przechowywania Przesyłki: {awizo_miejsce_przesylki_text}")
+            y_position -= 20
+
+        tracking_url = f"https://sledzenie.poczta-polska.pl/?numer={numer_nadania}"
+        c.drawString(50, y_position, "Nr. przesyłki: ")
+        c.setFillColorRGB(0, 0, 1)
+        c.drawString(150, y_position, tracking_url)
+        c.linkURL(tracking_url, (150, y_position, 450, y_position + 15), relative=1, thickness=0, color=None)
+        c.setFillColor(black)
+        y_position -= 20
+
+        c.drawString(50, y_position, "Adresat:")
+        c.line(50, y_position - 2, 100, y_position - 2)
+        y_position -= 20
+        c.drawString(50, y_position, f"{adresat}")
+        y_position -= 20
+        c.drawString(50, y_position, f"{ulica_adresat} {dom_adresat}")
+        y_position -= 20
+        if lokal_adresat:
+            c.drawString(50, y_position, f"Lokal: {lokal_adresat}")
+            y_position -= 20
+        c.drawString(50, y_position, f"{kod_pocztowy_adresat} {miejscowosc}")
+        y_position -= 20
+        c.drawString(50, y_position, "Nadawca:")
+        c.line(50, y_position - 2, 100, y_position - 2)
+        y_position -= 20
+        c.drawString(50, y_position, f"{nazwa_jednostki}")
+        y_position -= 20
+        c.drawString(50, y_position, f"{ulica_nadawca} {dom_nadawca}")
+        y_position -= 20
+        if lokal_adresat:
+            c.drawString(50, y_position, f"Lokal: {lokal_nadawca}")
+            y_position -= 20
+        if wydzial:
+            c.drawString(50, y_position, f"Wydział: {wydzial}")
+            y_position -= 20
+        if kod_pocztowy_nadawca:
+            c.drawString(50, y_position, f"{kod_pocztowy_nadawca} {miasto}")
+        else:
+            c.drawString(50, y_position, f"{miasto}")
+        y_position -= 20
+
+        c.drawString(50, y_position, "Wydający przesyłkę:")
+        c.line(50, y_position - 2, 150, y_position - 2)
+        y_position -= 20
+        # Dodanie nowych wartości do PDF
+        c.drawString(50, y_position, f"Data Podpisu: {data_podpisu}")
+        y_position -= 20
+
+        c.drawString(50, y_position, f"Data Zapisu: {data_zapisu}")
+        y_position -= 20
+
+        c.drawString(50, y_position, f"ID Operatora: {id_operatora}")
+        y_position -= 20
+
+        c.drawString(50, y_position, f"ID Urządzenia: {id_urzadzenia}")
+        y_position -= 20
+
+        c.drawString(50, y_position, f"Imię Wydającego: {imie_wydajacego}")
+        y_position -= 20
+
+        c.drawString(50, y_position, f"Nazwisko Wydającego: {nazwisko_wydajacego}")
+        y_position -= 20
+
+        c.drawString(50, y_position, f"ID Wydającego: {id_wydajacego}")
+        y_position -= 20
+
+        c.drawString(50, y_position, f"ID Placówki: {id_placowka}")
+        y_position -= 20
+
+        c.drawString(50, y_position, f"Nazwa Placówki: {nazwa_placowki}")
+        y_position -= 20
+
+        c.drawString(50, y_position, f"Adres Placówki: {adres_placowki}")
+        y_position -= 20
+
+        c.drawString(50, y_position, f"PNI Placówki: {pni_placowki}")
+        y_position -= 20
+
+        # Dodanie nowej strony dla obrazu
+        c.showPage()
+        # Dekodowanie i dodanie podpisu do PDF
+        if podpis:
+            try:
+                podpis_obraz = base64.b64decode(podpis)
+                image = ImageReader(BytesIO(podpis_obraz))
+                c.drawImage(image, 100, height - 450, width=width - 200, height=350)
+            except Exception as e:
+                print(f"Błąd dodawania podpisu do PDF: {e}")
+        else:
+            print("Brak podpisu do dodania do PDF.")
+        c.save()
+    except PermissionError:
+        print(f"Błąd: Nie można zapisać pliku PDF '{output_file}'. Upewnij się, że plik nie jest otwarty w innym programie.")
+        
 def process_folder(folder_path):
     MAX_FILENAME_LENGTH = 240
 
@@ -1033,8 +1045,9 @@ def process_folder(folder_path):
 
 def check_latest_release(owner, repo, current_version):
     url = f"https://api.github.com/repos/{owner}/{repo}/releases/latest"
-    response = requests.get(url)
-    if response.status_code == 200:
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Sprawdza, czy odpowiedź HTTP zawiera błąd
         latest_release = response.json()
         latest_version = latest_release['tag_name']
         if version.parse(latest_version) > version.parse(current_version):
@@ -1042,8 +1055,10 @@ def check_latest_release(owner, repo, current_version):
             user_input = input("Czy chcesz pobrać najnowszą wersję? Naciśnij 'T' lub 'N': ")
             if user_input.lower() == 't':
                 webbrowser.open(f"https://github.com/{owner}/{repo}/releases")
-    else:
-        print("Nie udało się pobrać informacji o najnowszej wersji.")
+    except requests.exceptions.SSLError as e:
+        print("Błąd weryfikacji certyfikatu SSL: nie udało się zweryfikować certyfikatu. Sprawdź swoje połączenie internetowe lub ustawienia certyfikatów.")
+    except requests.exceptions.RequestException as e:
+        print(f"Nie udało się pobrać informacji o najnowszej wersji: {e}")
 
 if __name__ == "__main__":
     print("EPO wersja 1.0.11 Autor: Tomasz Rekusz")
