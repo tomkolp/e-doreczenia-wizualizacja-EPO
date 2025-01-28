@@ -603,8 +603,9 @@ def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer
             y_position -= 20
 
         # Dodanie pozostałych informacji do PDF
-        c.drawString(48.2, y_position, f"IdKartyEPO: {id_karta_epo}")
-        y_position -= 20
+        if id_karta_epo:
+            c.drawString(48.2, y_position, f"IdKartyEPO: {id_karta_epo}")
+            y_position -= 20
         c.drawString(48.2, y_position, f"IdPrzesylki: {id_przesylka}")
         y_position -= 20
 
@@ -614,7 +615,10 @@ def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer
         c.drawString(50, y_position, f"Data Nadania: {data_nadania}")
         y_position -= 20
 
-        c.drawString(50, y_position, f"Status Przesyłki: {status_przesylki}")
+        if status_przesylki == 6:
+            c.setFillColor(orange)
+            c.drawString(50, y_position, "Status Przesyłki: Zwrot (po awizo)")
+            c.setFillColor(black)  # Powrót do domyślnego koloru
         y_position -= 20
 
         c.setFillColor(orange)
@@ -622,8 +626,18 @@ def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer
         c.setFillColor(black)
         y_position -= 20
 
-        c.drawString(50, y_position, f"Brak Doręczenia: {brak_doreczenia}")
-        y_position -= 20
+        brak_doreczenia_map = {
+            0: "adresat odmówił przyjęcia",
+            2: "Nie doręczona z innych przyczyn",
+            3: "Nie podjęto przesyłki z placówki pocztowej/Urzędu gminy"
+        }
+
+        brak_doreczenia = int(brak_doreczenia)
+
+        if brak_doreczenia in brak_doreczenia_map:
+            brak_doreczenia_text = brak_doreczenia_map[brak_doreczenia]
+            c.drawString(50, y_position, f"Brak Doręczenia: {brak_doreczenia_text}")
+            y_position -= 20
 
         c.setFillColor(orange)
         c.drawString(50, y_position, f"Data Awizo 1: {data_awizo1}")
@@ -648,31 +662,29 @@ def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer
         y_position -= 20
         c.drawString(50, y_position, f"{adresat}")
         y_position -= 20
-        c.drawString(50, y_position, f"Ulica: {ulica_adresat} {dom_adresat}")
         if lokal_adresat:
-            c.drawString(50, y_position, f"Lokal: {lokal_adresat}")
+            c.drawString(50, y_position, f"{ulica_adresat} {dom_adresat}/{lokal_adresat}")
             y_position -= 20
+        else:
+            c.drawString(50, y_position, f"{ulica_adresat} {dom_adresat}")
+            y_position -= 20
+        c.drawString(50, y_position, f"{kod_pocztowy_adresat} {adresat_miejscowosc}")
         y_position -= 20
-        c.drawString(50, y_position, f"Miejscowość: {adresat_miejscowosc}")
-        y_position -= 20
-        c.drawString(50, y_position, f"Kod Pocztowy: {kod_pocztowy_adresat}")
-        y_position -= 20
-
         c.drawString(50, y_position, "Nadawca:")
         c.line(50, y_position - 2, 100, y_position - 2)
         y_position -= 20
         c.drawString(50, y_position, f"{nadawca_nazwa}")
         y_position -= 20
-        c.drawString(50, y_position, f"Wydział: {nadawca_wydzial}")
-        y_position -= 20
-        c.drawString(50, y_position, f"Miasto: {nadawca_miasto}")
-        y_position -= 20
-        c.drawString(50, y_position, f"Ulica: {nadawca_ulica} {nadawca_dom}")
         if nadawca_lokal:
-            c.drawString(50, y_position, f"Lokal: {nadawca_lokal}")
+            c.drawString(50, y_position, f"{nadawca_ulica} {nadawca_dom}/{nadawca_lokal}")
             y_position -= 20
-        y_position -= 20
-        c.drawString(50, y_position, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
+        else:
+            c.drawString(50, y_position, f"{nadawca_ulica} {nadawca_dom}")
+            y_position -= 20
+        if nadawca_wydzial:
+            c.drawString(50, y_position, f"Wydział: {nadawca_wydzial}")
+            y_position -= 20
+        c.drawString(50, y_position, f"{nadawca_kod_pocztowy} {nadawca_miasto}")
         y_position -= 20
         # Dodanie informacji o wydającym przesyłkę
         c.drawString(50, y_position, "Wydający zwróconą przesyłkę:")
@@ -890,6 +902,7 @@ def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, n
             awizo_miejsce_zawiadomienia_text = awizo_miejsce_zawiadomienia_map[awizo_miejsce_zawiadomienia]
             c.drawString(50, y_position, f"Awizo Miejsce Zawiadomienia: {awizo_miejsce_zawiadomienia_text}")
             y_position -= 20
+
         c.setFillColor(orange)
         c.drawString(50, y_position, f"Data Awizo 1: {data_awizo1}")
         c.setFillColor(black)
