@@ -537,19 +537,29 @@ def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, dat
         y_position -= 20
         c.drawString(50, y_position, f"{adresat_nazwa}")
         y_position -= 20
+        c.drawString(50, y_position, f"{adresat_ulica} {adresat_numer_domu}")
+        y_position -= 20
+        c.drawString(50, y_position, f"{adresat_kod_pocztowy} {adresat_miejscowosc}")
+        y_position -= 20
+        ''' 
         c.drawString(50, y_position, f"Ulica: {adresat_ulica} {adresat_numer_domu}")
         y_position -= 20
         c.drawString(50, y_position, f"Miejscowość: {adresat_miejscowosc}")
         y_position -= 20
         c.drawString(50, y_position, f"Kod Pocztowy: {adresat_kod_pocztowy}")
         y_position -= 20
-
+        '''
         # Dodanie Nadawca do PDF
         c.drawString(50, y_position, "Nadawca:")
         c.line(50, y_position - 2, 100, y_position - 2)  # Podkreślenie tekstu
         y_position -= 20
         c.drawString(50, y_position, f"{nadawca_nazwa}")
         y_position -= 20
+        c.drawString(50, y_position, f"{nadawca_ulica} {nadawca_numer_domu}")
+        y_position -= 20
+        c.drawString(50, y_position, f"{nadawca_kod_pocztowy} {nadawca_miejscowosc}")
+        y_position -= 20
+        '''
         c.drawString(50, y_position, f"Nadawca cd.: {nadawca_nazwa2}")
         y_position -= 20
         c.drawString(50, y_position, f"Ulica: {nadawca_ulica} {nadawca_numer_domu}")
@@ -558,6 +568,7 @@ def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, dat
         y_position -= 20
         c.drawString(50, y_position, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
         y_position -= 20
+        '''
 
         # Dodanie nowej strony dla obrazu
         c.showPage()
@@ -722,7 +733,16 @@ def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania
         available_width = width - 2 * margin
 
         y_position = height - 50
+        c.drawString(50, y_position, f"IdKartyEPO: {id_karty_epo}")
+        y_position -= 20
+        c.drawString(50, y_position, f"IdPrzesylki: {id_przesylki}")
+        y_position -= 20
         c.drawString(50, y_position, f"Data Utworzenia: {data_utworzenia}")
+        y_position -= 20
+
+        c.setFillColor(red)
+        c.drawString(50, y_position, f"Treść Adnotacji: {tresc_adnotacji}")
+        c.setFillColor(black)
         y_position -= 20
         c.setFillColor(red)
         c.drawString(50, y_position, f"Systemowa Data Oznaczenia: {systemowa_data} (Data zwrotu)")
@@ -744,33 +764,42 @@ def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania
         c.drawString(50, y_position, "Adresat:")
         c.line(50, y_position - 2, 100, y_position - 2)
         y_position -= 20
-        c.drawString(50, y_position, f"Nazwa: {adresat_nazwa}")
+        c.drawString(50, y_position, f"{adresat_nazwa}")
         y_position -= 20
+
+        c.drawString(50, y_position, f"{adresat_ulica} {adresat_numer_domu}")
+        y_position -= 20
+        c.drawString(50, y_position, f"{adresat_kod_pocztowy} {adresat_miejscowosc}")
+        y_position -= 20
+
+        '''
         c.drawString(50, y_position, f"Ulica: {adresat_ulica} {adresat_numer_domu}")
         y_position -= 20
         c.drawString(50, y_position, f"Miejscowość: {adresat_miejscowosc}")
         y_position -= 20
         c.drawString(50, y_position, f"Kod Pocztowy: {adresat_kod_pocztowy}")
         y_position -= 20
-
+        '''
         c.drawString(50, y_position, "Nadawca:")
         c.line(50, y_position - 2, 100, y_position - 2)
         y_position -= 20
         c.drawString(50, y_position, f"Nazwa: {nadawca_nazwa}")
         y_position -= 20
-        c.drawString(50, y_position, f"Nazwa cd.: {nadawca_nazwa2}")
+        c.drawString(50, y_position, f"{nadawca_ulica} {nadawca_numer_domu}")
         y_position -= 20
+        c.drawString(50, y_position, f"{nadawca_kod_pocztowy} {nadawca_miejscowosc}")
+        y_position -= 40
+        '''
         c.drawString(50, y_position, f"Ulica: {nadawca_ulica} {nadawca_numer_domu}")
         y_position -= 20
         c.drawString(50, y_position, f"Miejscowość: {nadawca_miejscowosc}")
         y_position -= 20
         c.drawString(50, y_position, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
         y_position -= 20
-
+        '''
         c.drawString(50, y_position, f"Tryb Doręczenia: {tryb_doreczenia}")
         y_position -= 20
         c.drawString(50, y_position, f"Do Rąk Własnych: {'Tak' if do_rak_wlasnych else 'Nie'}")
-        y_position -= 20
         y_position -= 20
         c.drawString(50, y_position, f"Data Adnotacji: {data_adnotacji}")
         y_position -= 20
@@ -802,11 +831,6 @@ def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania
         y_position -= 20
 
         c.drawString(50, y_position, f"Powód Zwrotu: {powod_zwrotu}")
-        y_position -= 20
-
-        c.setFillColor(red)
-        c.drawString(50, y_position, f"Treść Adnotacji: {tresc_adnotacji}")
-        c.setFillColor(black)
         y_position -= 20
 
         c.save()
