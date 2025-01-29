@@ -540,9 +540,8 @@ def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, dat
         y_position -= 20
         c.drawString(50, y_position, f"{adresat_nazwa}")
         y_position -= 20
-        # Sprawdzenie czy lokal_adresat jest pusty (plik xml jest niekompletny, zawiera tylko prawą część tagu gdy nie ma lokalu)
-        print(f"lokal_adresat: {lokal_adresat}")
 
+        # Sprawdzenie czy lokal_adresat jest pusty (plik xml jest niekompletny, zawiera tylko prawą część tagu gdy nie ma lokalu)
         if lokal_adresat == "Brak danych" or lokal_adresat is None:
             c.drawString(50, y_position, f"{adresat_ulica} {adresat_numer_domu}")
             y_position -= 20
@@ -559,6 +558,7 @@ def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, dat
         y_position -= 20
         c.drawString(50, y_position, f"{nadawca_nazwa}")
         y_position -= 20
+        
         # Sprawdzenie czy lokal_nadawca jest pusty (plik xml jest niekompletny, zawiera tylko prawą część tagu gdy nie ma lokalu)
         if lokal_nadawca == "Brak danych" or lokal_nadawca is None:
             c.drawString(50, y_position, f"{nadawca_ulica} {nadawca_numer_domu}")
