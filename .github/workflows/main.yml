@@ -1,0 +1,48 @@
+name: Build epo.exe with PyInstaller
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r requirements.txt
+
+      - name: Build epo.exe
+        run: |
+          pyinstaller --onefile --name epo epo.py
+
+      - name: Upload epo.exe as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: epo-executable
+          path: dist/epo.exe
+
+      - name: Commit and push epo.exe to repository
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add dist/epo.exe
+          git commit -m "Add built epo.exe"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
