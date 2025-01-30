@@ -13,10 +13,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
@@ -45,10 +45,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
@@ -76,10 +76,10 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
@@ -108,7 +108,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+
+      - name: Move artifacts to correct locations
+        run: |
+          mv dist/epo-executable-windows/epo.exe dist/
+          mv dist/epo-executable-linux/epo-linux dist/
+          mv dist/epo-executable-macos/epo-macos dist/
+          rm -rf dist/epo-executable-windows dist/epo-executable-linux dist/epo-executable-macos
+
+      - name: Show downloaded files
+        run: |
+          ls -al dist/
 
       - name: Set up Git for commit
         run: |
@@ -122,6 +138,7 @@ jobs:
 
       - name: Push built executables to repository
         run: |
+          git pull --rebase
           git push https://github.com/${{ github.repository }}.git HEAD:main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
