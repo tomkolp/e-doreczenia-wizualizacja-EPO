@@ -17,39 +17,31 @@ Program generuje wizualiację Elektronicznego Potwierdzenia Odbioru (EPO) w form
   
 # Raport EPO dla przesyłki doręczonej
 
-Poniżej znajdują się zrzuty ekranu dokumentów EPO dla przesyłki.
+Poniżej znajdują się linki do pobrania dokumentów EPO w formacie PDF, z podziałem na strony.
 
 ## 📄 Podgląd dokumentów
 
 ### Raport EPO dla przesyłki doręczonej
 #### Doręczenie
-[![Doręczenie - strona 1](screeny/doreczenie-page-001.jpg)](screeny/doreczenie-page-001.jpg)  
-[![Doręczenie - strona 2](screeny/doreczenie-page-002.jpg)](screeny/doreczenie-page-002.jpg)  
-
-📥 **[Pobierz pełny raport PDF](screeny/doreczenie.pdf)**
+📥 **[Pobierz raport EPO - strona 1 (PDF)](pdf/doreczenie.pdf)**  
+📥 **[Pobierz raport EPO - strona 2 (PDF)](pdf/doreczenie.pdf)**  
 
 ### Raport EPO dla przesyłki doręczonej po awizo
 #### Doręczenie po awizo
-[![Doręczenie po awizo - strona 1](screeny/doreczenie_po_awizo-page-001.jpg)](screeny/doreczenie_po_awizo-page-001.jpg)  
-[![Doręczenie po awizo - strona 2](screeny/doreczenie_po_awizo-page-002.jpg)](screeny/doreczenie_po_awizo-page-002.jpg)  
-
-📥 **[Pobierz pełny raport PDF](screeny/doreczenie_po_awizo.pdf)**
+📥 **[Pobierz raport EPO - strona 1 (PDF)](pdf/doreczenie_po_awizo.pdf)**  
+📥 **[Pobierz raport EPO - strona 2 (PDF)](pdf/doreczenie_po_awizo.pdf)**  
 
 ### Raport EPO dla przesyłki zwróconej
 #### Zwrot
-[![Zwrot - strona 1](screeny/zwrot-page-001.jpg)](screeny/zwrot-page-001.jpg)  
-
-📥 **[Pobierz pełny raport PDF](screeny/zwrot.pdf)**
+📥 **[Pobierz raport EPO - strona 1 (PDF)](pdf/zwrot.pdf)**  
 
 ### Raport EPO dla przesyłki zwróconej po awizo
 #### Zwrot awizowany
-[![Zwrot awizowany - strona 1](screeny/zwrot_awizowany-page-001.jpg)](screeny/zwrot_awizowany-page-001.jpg)  
-
-📥 **[Pobierz pełny raport PDF](screeny/zwrot_awizowany.pdf)**
+📥 **[Pobierz raport EPO - strona 1 (PDF)](pdf/zwrot_awizowany.pdf)**  
 
 ---
 
-📌 **Uwaga:** Wszystkie pliki znajdują się w katalogu `screeny/` w repozytorium.
+📌 **Uwaga:** Wszystkie pliki znajdują się w katalogu `pdf/` w repozytorium.
 
 
 
