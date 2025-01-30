@@ -15,7 +15,7 @@ Program generuje wizualiację Elektronicznego Potwierdzenia Odbioru (EPO) w form
    - Zwrot awizowany
    - Zwrot z innych przyczyn
   
-# Raport EPO dla przesyłki doręczonej
+# Przykładowo wygenerowane EPO:
 
 Poniżej znajdują się linki do pobrania dokumentów EPO w formacie PDF, z podziałem na strony.
 
