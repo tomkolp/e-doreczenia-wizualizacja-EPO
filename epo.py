@@ -218,7 +218,7 @@ def zwrot_parse_xml_file(file_path):
         root = tree.getroot()
     except ET.ParseError as e:
         print(f"Błąd parsowania pliku XML: {e}")
-        return "Brak danych", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+        return "Brak danych", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
 
     ns = {
         'mstns': 'KartaEPO/2018/07/15',
@@ -231,7 +231,7 @@ def zwrot_parse_xml_file(file_path):
     rodzaj_zwrot = rodzaj_zwrot_elem.text if rodzaj_zwrot_elem is not None else ""
 
     if rodzaj_zwrot != "ZWROT":
-        return "Brak danych", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+        return "Brak danych", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
 
     data_utworzenia_elem = root.find('.//mstns:DataUtworzenia', ns)
     data_utworzenia = data_utworzenia_elem.text if data_utworzenia_elem is not None else "Brak danych"
@@ -254,6 +254,9 @@ def zwrot_parse_xml_file(file_path):
     adresat_ulica = adresat_ulica_elem.text if adresat_ulica_elem is not None else "Brak danych"
     adresat_numer_domu_elem = root.find('.//mstns:Adresat/mstns:NumerDomu', ns)
     adresat_numer_domu = adresat_numer_domu_elem.text if adresat_numer_domu_elem is not None else "Brak danych"
+    lokal_elems = root.findall('.//mstns:NumerLokalu', ns)
+    lokal_adresat = lokal_elems[0].text if len(lokal_elems) > 0 else "Brak danych"
+    lokal_nadawca = lokal_elems[1].text if len(lokal_elems) > 1 else "Brak danych"
     adresat_miejscowosc_elem = root.find('.//mstns:Adresat/mstns:Miejscowosc', ns)
     adresat_miejscowosc = adresat_miejscowosc_elem.text if adresat_miejscowosc_elem is not None else "Brak danych"
     adresat_kod_pocztowy_elem = root.find('.//mstns:Adresat/mstns:KodPocztowy', ns)
@@ -311,7 +314,7 @@ def zwrot_parse_xml_file(file_path):
     tresc_adnotacji_elem = root.find('.//mstns:TrescAdnotacji', ns)
     tresc_adnotacji = tresc_adnotacji_elem.text if tresc_adnotacji_elem is not None else "Brak danych"
 
-    return (data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot)
+    return (data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, lokal_adresat, lokal_nadawca, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot)
 
 def doreczenie_po_awizo_parse_xml_file(file_path):
     try:
@@ -720,7 +723,7 @@ def zwrot_awizowany_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer
     except PermissionError:
         print(f"Błąd: Nie można zapisać pliku PDF '{output_file}'. Upewnij się, że plik nie jest otwarty w innym programie.")
 
-def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot, output_file):
+def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, lokal_adresat, lokal_nadawca, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot, output_file):
 
     try:
         c = canvas.Canvas(output_file, pagesize=A4)
@@ -766,37 +769,32 @@ def zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania
         y_position -= 20
         c.drawString(50, y_position, f"{adresat_nazwa}")
         y_position -= 20
+        # Sprawdzenie czy lokal_adresat jest pusty (plik xml jest niekompletny, zawiera tylko prawą część tagu gdy nie ma lokalu)
+        if lokal_adresat == "Brak danych" or lokal_adresat is None:
+            c.drawString(50, y_position, f"{adresat_ulica} {adresat_numer_domu}")
+            y_position -= 20
+        else:
+            c.drawString(50, y_position, f"{adresat_ulica} {adresat_numer_domu}/{lokal_adresat}")
+            y_position -= 20
 
-        c.drawString(50, y_position, f"{adresat_ulica} {adresat_numer_domu}")
-        y_position -= 20
         c.drawString(50, y_position, f"{adresat_kod_pocztowy} {adresat_miejscowosc}")
         y_position -= 20
-
-        '''
-        c.drawString(50, y_position, f"Ulica: {adresat_ulica} {adresat_numer_domu}")
-        y_position -= 20
-        c.drawString(50, y_position, f"Miejscowość: {adresat_miejscowosc}")
-        y_position -= 20
-        c.drawString(50, y_position, f"Kod Pocztowy: {adresat_kod_pocztowy}")
-        y_position -= 20
-        '''
         c.drawString(50, y_position, "Nadawca:")
         c.line(50, y_position - 2, 100, y_position - 2)
         y_position -= 20
         c.drawString(50, y_position, f"Nazwa: {nadawca_nazwa}")
         y_position -= 20
-        c.drawString(50, y_position, f"{nadawca_ulica} {nadawca_numer_domu}")
-        y_position -= 20
+        # Sprawdzenie czy lokal_nadawca jest pusty (plik xml jest niekompletny, zawiera tylko prawą część tagu gdy nie ma lokalu)
+        if lokal_nadawca == "Brak danych" or lokal_nadawca is None:
+            c.drawString(50, y_position, f"{nadawca_ulica} {nadawca_numer_domu}")
+            y_position -= 20
+        else:
+            c.drawString(50, y_position, f"{nadawca_ulica} {nadawca_numer_domu}/{lokal_nadawca}")
+            y_position -= 20
+
         c.drawString(50, y_position, f"{nadawca_kod_pocztowy} {nadawca_miejscowosc}")
         y_position -= 40
-        '''
-        c.drawString(50, y_position, f"Ulica: {nadawca_ulica} {nadawca_numer_domu}")
-        y_position -= 20
-        c.drawString(50, y_position, f"Miejscowość: {nadawca_miejscowosc}")
-        y_position -= 20
-        c.drawString(50, y_position, f"Kod Pocztowy: {nadawca_kod_pocztowy}")
-        y_position -= 20
-        '''
+
         c.drawString(50, y_position, f"Tryb Doręczenia: {tryb_doreczenia}")
         y_position -= 20
         c.drawString(50, y_position, f"Do Rąk Własnych: {'Tak' if do_rak_wlasnych else 'Nie'}")
@@ -1091,14 +1089,14 @@ def process_folder(folder_path):
                 doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, numer_nadania, data_nadania, adresat, kod_pocztowy_adresat, kod_pocztowy_nadawca, ulica_adresat, ulica_nadawca, dom_adresat, dom_nadawca, lokal_adresat, lokal_nadawca, miejscowosc, status_przesylki, systemowa_data, odbiorca_przesylki, imie_nazwisko_odbiorcy, podpis, brak_doreczenia, awizo_miejsce_przesylki, awizo_miejsce_zawiadomienia, data_awizo1, data_awizo2, id_jednostka_ms, nazwa_jednostki, wydzial, miasto, data_podpisu, data_zapisu, id_operatora, id_urzadzenia, imie_wydajacego, nazwisko_wydajacego, id_wydajacego, id_placowka, nazwa_placowki, adres_placowki, pni_placowki, pdf_output_file, podpis_obraz_base64, file_path)
 
             # Obsługa zwrotu
-            data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot = zwrot_parse_xml_file(file_path)
+            data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, lokal_adresat, lokal_nadawca, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot = zwrot_parse_xml_file(file_path)
             if rodzaj_zwrot == "ZWROT":
                 zwrot_count += 1
                 pdf_output_file = os.path.join(folder_path, f"{os.path.splitext(filename)[0]}_zwrot.pdf")
                 if len(pdf_output_file) > MAX_FILENAME_LENGTH:
                     input()
                     return
-                zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot, pdf_output_file)
+                zwrot_save_to_pdf(data_utworzenia, id_karty_epo, id_przesylki, numer_nadania, data_nadania, adresat_nazwa, adresat_ulica, adresat_numer_domu, lokal_adresat, lokal_nadawca, adresat_miejscowosc, adresat_kod_pocztowy, nadawca_nazwa, nadawca_nazwa2, nadawca_ulica, nadawca_numer_domu, nadawca_miejscowosc, nadawca_kod_pocztowy, tryb_doreczenia, do_rak_wlasnych, systemowa_data, data_adnotacji, data_zdarzenia, operator_imie, operator_nazwisko, operator_id, placowka_nazwa, placowka_ulica, placowka_numer_domu, placowka_miejscowosc, placowka_kod_pocztowy, placowka_kraj, powod_zwrotu, tresc_adnotacji, rodzaj_zwrot, pdf_output_file)
 
     print(f"Doreczenia: {doreczenia_count}")
     print()
