@@ -14,6 +14,39 @@ Program generuje wizualiację Elektronicznego Potwierdzenia Odbioru (EPO) w form
    - Odbiór po awizowaniu
    - Zwrot awizowany
    - Zwrot z innych przyczyn
+  
+# Raport EPO dla przesyłki doręczonej
+
+Poniżej znajdują się zrzuty ekranu dokumentów EPO dla przesyłki.
+
+## 📄 Podgląd dokumentów
+
+### Doręczenie
+![Doręczenie - strona 1](screeny/doreczenie-page-001.jpg)  
+![Doręczenie - strona 2](screeny/doreczenie-page-002.jpg)  
+
+📥 **[Pobierz pełny raport PDF](screeny/doreczenie.pdf)**
+
+### Doręczenie po awizo
+![Doręczenie po awizo - strona 1](screeny/doreczenie_po_awizo-page-001.jpg)  
+![Doręczenie po awizo - strona 2](screeny/doreczenie_po_awizo-page-002.jpg)  
+
+📥 **[Pobierz pełny raport PDF](screeny/doreczenie_po_awizo.pdf)**
+
+### Zwrot
+![Zwrot - strona 1](screeny/zwrot-page-001.jpg)  
+
+📥 **[Pobierz pełny raport PDF](screeny/zwrot.pdf)**
+
+### Zwrot awizowany
+![Zwrot awizowany - strona 1](screeny/zwrot_awizowany-page-001.jpg)  
+
+📥 **[Pobierz pełny raport PDF](screeny/zwrot_awizowany.pdf)**
+
+---
+
+📌 **Uwaga:** Wszystkie pliki znajdują się w katalogu `screeny/` w repozytorium.
+
 
 ## Przyszłe Wersje
 - Poprawki błędów i optymalizacja
