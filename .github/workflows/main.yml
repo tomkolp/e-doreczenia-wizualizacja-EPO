@@ -45,28 +45,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
+      - name: Build in manylinux
         run: |
-          python -m pip install --upgrade pip
-          pip install pyinstaller
-          pip install -r requirements.txt
+          docker run --rm -v $(pwd):/src quay.io/pypa/manylinux2014_x86_64 bash -c "
+          cd /src &&
+          /opt/python/cp310-cp310/bin/python -m pip install pyinstaller &&
+          /opt/python/cp310-cp310/bin/pyinstaller --onefile --name epo-linux epo.py"
 
-      - name: Build executable on Linux
-        run: |
-          pyinstaller --onefile --name epo-linux epo.py
-
-      - name: Check output files
-        run: |
-          ls -al dist/
-
-      - name: Upload epo-linux as artifact
+      - name: Upload epo executable as artifact
         uses: actions/upload-artifact@v4
         with:
           name: epo-executable-linux
