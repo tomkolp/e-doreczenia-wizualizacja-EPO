@@ -15,29 +15,33 @@ Program generuje wizualiację Elektronicznego Potwierdzenia Odbioru (EPO) w form
    - Zwrot awizowany
    - Zwrot z innych przyczyn
   
-# Raport EPO dla przesyłki doręczonej
+# Przykładowo wygenerowane EPO:
 
-Poniżej znajdują się zrzuty ekranu dokumentów EPO dla przesyłki.
+Poniżej znajdują się linki do pobrania dokumentów EPO w formacie PDF, z podziałem na strony.
 
 ## 📄 Podgląd dokumentów
 
-### Doręczenie
-![Doręczenie - strona 1](screeny/doreczenie-page-001.jpg)
-![Doręczenie - strona 2](screeny/doreczenie-page-002.jpg)
+### Raport EPO dla przesyłki doręczonej
+#### Doręczenie
+📥 **[Pobierz raport EPO - strona 1 (PDF)](pdf/doreczenie.pdf)**  
+📥 **[Pobierz raport EPO - strona 2 (PDF)](pdf/doreczenie.pdf)**  
 
-### Doręczenie po awizo
-![Doręczenie po awizo - strona 1](screeny/doreczenie_po_awizo-page-001.jpg)
-![Doręczenie po awizo - strona 2](screeny/doreczenie_po_awizo-page-002.jpg)
+### Raport EPO dla przesyłki doręczonej po awizo
+#### Doręczenie po awizo
+📥 **[Pobierz raport EPO - strona 1 (PDF)](pdf/doreczenie_po_awizo.pdf)**  
+📥 **[Pobierz raport EPO - strona 2 (PDF)](pdf/doreczenie_po_awizo.pdf)**  
 
-### Zwrot
-![Zwrot - strona 1](screeny/zwrot-page-001.jpg)
+### Raport EPO dla przesyłki zwróconej
+#### Zwrot
+📥 **[Pobierz raport EPO - strona 1 (PDF)](pdf/zwrot.pdf)**  
 
-### Zwrot awizowany
-![Zwrot awizowany - strona 1](screeny/zwrot_awizowany-page-001.jpg)
+### Raport EPO dla przesyłki zwróconej po awizo
+#### Zwrot awizowany
+📥 **[Pobierz raport EPO - strona 1 (PDF)](pdf/zwrot_awizowany.pdf)**  
 
 ---
 
-📌 **Uwaga:** Wszystkie pliki znajdują się w katalogu `screeny/` w repozytorium.
+📌 **Uwaga:** Wszystkie pliki znajdują się w katalogu `pdf/` w repozytorium.
 
 
 
