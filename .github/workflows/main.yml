@@ -28,33 +28,7 @@ jobs:
 
       - name: Build epo.exe on Windows
         run: |
-          pyinstaller --onefile --name epo epo.py
-
-      - name: Upload epo.exe as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: epo-executable-windows
-          path: dist/epo.exe
-
-      - name: Set up Git for commit
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-      
-      - name: Pull latest changes from remote
-        run: |
-          git pull origin main
-      
-      - name: Add and commit built epo.exe
-        run: |
-          git add dist/epo.exe
-          git commit -m "Add built epo.exe"
-      
-      - name: Push built epo.exe to repository
-        run: |
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          pyinstaller --onefile --name epo.exe epo.py
 
   build-linux:
     runs-on: ubuntu-latest
@@ -75,33 +49,7 @@ jobs:
 
       - name: Build executable on Linux
         run: |
-          pyinstaller --onefile --name epo epo.py
-
-      - name: Upload epo executable as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: epo-executable-linux
-          path: dist/epo
-
-      - name: Set up Git for commit
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-      
-      - name: Pull latest changes from remote
-        run: |
-          git pull origin main
-      
-      - name: Add and commit built epo on Linux
-        run: |
-          git add dist/epo
-          git commit -m "Add built epo for Linux"
-      
-      - name: Push built epo to repository
-        run: |
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          pyinstaller --onefile --name epo-linux epo.py
 
   build-macos:
     runs-on: macos-latest
@@ -122,29 +70,26 @@ jobs:
 
       - name: Build executable on macOS
         run: |
-          pyinstaller --onefile --name epo epo.py
+          pyinstaller --onefile --name epo-macos epo.py
 
-      - name: Upload epo executable as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: epo-executable-macos
-          path: dist/epo
+  commit-and-push:
+    needs: [build-windows, build-linux, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Set up Git for commit
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-      
-      - name: Pull latest changes from remote
+
+      - name: Add and commit all built executables
         run: |
-          git pull origin main
-      
-      - name: Add and commit built epo for macOS
-        run: |
-          git add dist/epo
-          git commit -m "Add built epo for macOS"
-      
-      - name: Push built epo to repository
+          git add dist/*
+          git commit -m "Add built executables for Windows, Linux, and macOS" || echo "No changes to commit"
+
+      - name: Push built executables to repository
         run: |
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
         env:
