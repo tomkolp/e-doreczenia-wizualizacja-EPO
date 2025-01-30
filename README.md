@@ -21,19 +21,31 @@ Poniżej znajdują się zrzuty ekranu dokumentów EPO dla przesyłki.
 
 ## 📄 Podgląd dokumentów
 
-### Doręczenie
-![Doręczenie - strona 1](screeny/doreczenie-page-001.jpg)
-![Doręczenie - strona 2](screeny/doreczenie-page-002.jpg)
+### Raport EPO dla przesyłki doręczonej
+#### Doręczenie
+[![Doręczenie - strona 1](screeny/doreczenie-page-001.jpg)](screeny/doreczenie-page-001.jpg)  
+[![Doręczenie - strona 2](screeny/doreczenie-page-002.jpg)](screeny/doreczenie-page-002.jpg)  
 
-### Doręczenie po awizo
-![Doręczenie po awizo - strona 1](screeny/doreczenie_po_awizo-page-001.jpg)
-![Doręczenie po awizo - strona 2](screeny/doreczenie_po_awizo-page-002.jpg)
+📥 **[Pobierz pełny raport PDF](screeny/doreczenie.pdf)**
 
-### Zwrot
-![Zwrot - strona 1](screeny/zwrot-page-001.jpg)
+### Raport EPO dla przesyłki doręczonej po awizo
+#### Doręczenie po awizo
+[![Doręczenie po awizo - strona 1](screeny/doreczenie_po_awizo-page-001.jpg)](screeny/doreczenie_po_awizo-page-001.jpg)  
+[![Doręczenie po awizo - strona 2](screeny/doreczenie_po_awizo-page-002.jpg)](screeny/doreczenie_po_awizo-page-002.jpg)  
 
-### Zwrot awizowany
-![Zwrot awizowany - strona 1](screeny/zwrot_awizowany-page-001.jpg)
+📥 **[Pobierz pełny raport PDF](screeny/doreczenie_po_awizo.pdf)**
+
+### Raport EPO dla przesyłki zwróconej
+#### Zwrot
+[![Zwrot - strona 1](screeny/zwrot-page-001.jpg)](screeny/zwrot-page-001.jpg)  
+
+📥 **[Pobierz pełny raport PDF](screeny/zwrot.pdf)**
+
+### Raport EPO dla przesyłki zwróconej po awizo
+#### Zwrot awizowany
+[![Zwrot awizowany - strona 1](screeny/zwrot_awizowany-page-001.jpg)](screeny/zwrot_awizowany-page-001.jpg)  
+
+📥 **[Pobierz pełny raport PDF](screeny/zwrot_awizowany.pdf)**
 
 ---
 
