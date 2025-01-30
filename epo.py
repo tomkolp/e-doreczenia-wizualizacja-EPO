@@ -1125,7 +1125,7 @@ def check_latest_release(owner, repo, current_version):
         print(f"Nie udało się pobrać informacji o najnowszej wersji: {e}")
 
 if __name__ == "__main__":
-    print("EPO wersja 1.0.13 Autor: Tomasz Rekusz https://github.com/tomkolp/e-doreczenia-wizualizacja-EPO")
+    print("EPO wersja 1.1.1 Autor: Tomasz Rekusz https://github.com/tomkolp/e-doreczenia-wizualizacja-EPO")
     print()
 
     # Przetwarzanie plików
@@ -1135,7 +1135,7 @@ if __name__ == "__main__":
     # Sprawdzanie najnowszej wersji
     owner = "tomkolp"
     repo = "e-doreczenia-wizualizacja-EPO"
-    current_version = "1.0.13"
+    current_version = "1.1.1"
     check_latest_release(owner, repo, current_version)
 
     print()
