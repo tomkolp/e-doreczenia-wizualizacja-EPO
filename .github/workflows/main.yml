@@ -41,6 +41,10 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
       
+      - name: Pull latest changes from remote
+        run: |
+          git pull origin main
+      
       - name: Add and commit built epo.exe
         run: |
           git add dist/epo.exe
@@ -84,6 +88,10 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
       
+      - name: Pull latest changes from remote
+        run: |
+          git pull origin main
+      
       - name: Add and commit built epo on Linux
         run: |
           git add dist/epo
@@ -126,6 +134,10 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
+      
+      - name: Pull latest changes from remote
+        run: |
+          git pull origin main
       
       - name: Add and commit built epo for macOS
         run: |
