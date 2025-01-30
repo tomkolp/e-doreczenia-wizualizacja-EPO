@@ -558,7 +558,7 @@ def doreczenie_save_to_pdf(data_utworzenia, podpis_obraz, rodzaj_doreczenie, dat
         y_position -= 20
         c.drawString(50, y_position, f"{nadawca_nazwa}")
         y_position -= 20
-        
+
         # Sprawdzenie czy lokal_nadawca jest pusty (plik xml jest niekompletny, zawiera tylko prawą część tagu gdy nie ma lokalu)
         if lokal_nadawca == "Brak danych" or lokal_nadawca is None:
             c.drawString(50, y_position, f"{nadawca_ulica} {nadawca_numer_domu}")
@@ -960,11 +960,15 @@ def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, n
         y_position -= 20
         c.drawString(50, y_position, f"{adresat}")
         y_position -= 20
-        c.drawString(50, y_position, f"{ulica_adresat} {dom_adresat}")
-        y_position -= 20
-        if lokal_adresat:
-            c.drawString(50, y_position, f"Lokal: {lokal_adresat}")
+
+        # Sprawdzenie czy lokal_adresat jest pusty (plik xml jest niekompletny, zawiera tylko prawą stronę tagu, gdy nie ma lokalu)
+        if lokal_adresat == "Brak danych" or lokal_adresat is None:
+            c.drawString(50, y_position, f"{ulica_adresat} {dom_adresat}")
             y_position -= 20
+        else:
+            c.drawString(50, y_position, f"{ulica_adresat} {dom_adresat}/{lokal_adresat}")
+            y_position -= 20
+
         c.drawString(50, y_position, f"{kod_pocztowy_adresat} {miejscowosc}")
         y_position -= 20
         c.drawString(50, y_position, "Nadawca:")
@@ -972,11 +976,15 @@ def doreczenie_po_awizo_save_to_pdf(creation_date, id_karta_epo, id_przesylka, n
         y_position -= 20
         c.drawString(50, y_position, f"{nazwa_jednostki}")
         y_position -= 20
-        c.drawString(50, y_position, f"{ulica_nadawca} {dom_nadawca}")
-        y_position -= 20
-        if lokal_adresat:
-            c.drawString(50, y_position, f"Lokal: {lokal_nadawca}")
+
+        # Sprawdzenie czy lokal_nadawca jest pusty (plik xml jest niekompletny, zawiera tylko prawą stronę tagu, gdy nie ma lokalu)
+        if lokal_nadawca == "Brak danych" or lokal_nadawca is None:
+            c.drawString(50, y_position, f"{ulica_nadawca} {dom_nadawca}")
             y_position -= 20
+        else:
+            c.drawString(50, y_position, f"{ulica_nadawca} {dom_nadawca}/{lokal_nadawca}")
+            y_position -= 20
+
         if wydzial:
             c.drawString(50, y_position, f"Wydział: {wydzial}")
             y_position -= 20
@@ -1119,7 +1127,7 @@ def check_latest_release(owner, repo, current_version):
         print(f"Nie udało się pobrać informacji o najnowszej wersji: {e}")
 
 if __name__ == "__main__":
-    print("EPO wersja 1.0.12 Autor: Tomasz Rekusz https://github.com/tomkolp/e-doreczenia-wizualizacja-EPO")
+    print("EPO wersja 1.0.13 Autor: Tomasz Rekusz https://github.com/tomkolp/e-doreczenia-wizualizacja-EPO")
     print()
 
     # Przetwarzanie plików
@@ -1129,7 +1137,7 @@ if __name__ == "__main__":
     # Sprawdzanie najnowszej wersji
     owner = "tomkolp"
     repo = "e-doreczenia-wizualizacja-EPO"
-    current_version = "1.0.12"
+    current_version = "1.0.13"
     check_latest_release(owner, repo, current_version)
 
     print()
