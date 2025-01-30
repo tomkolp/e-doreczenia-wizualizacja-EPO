@@ -29,13 +29,11 @@ jobs:
       - name: Build epo.exe on Windows
         run: |
           pyinstaller --onefile --name epo.exe epo.py
-          ls -al dist/
 
-      - name: Check if epo.exe was created
+      - name: Check output files
         run: |
-          if [ ! -f dist/epo.exe ]; then
-            echo "Warning: epo.exe was not created."
-          fi
+          Get-ChildItem -Path dist/
+        shell: pwsh
 
       - name: Upload epo.exe as artifact
         uses: actions/upload-artifact@v4
@@ -63,15 +61,12 @@ jobs:
       - name: Build executable on Linux
         run: |
           pyinstaller --onefile --name epo-linux epo.py
+
+      - name: Check output files
+        run: |
           ls -al dist/
 
-      - name: Check if epo-linux was created
-        run: |
-          if [ ! -f dist/epo-linux ]; then
-            echo "Warning: epo-linux was not created."
-          fi
-
-      - name: Upload epo executable as artifact
+      - name: Upload epo-linux as artifact
         uses: actions/upload-artifact@v4
         with:
           name: epo-executable-linux
@@ -97,15 +92,12 @@ jobs:
       - name: Build executable on macOS
         run: |
           pyinstaller --onefile --name epo-macos epo.py
+
+      - name: Check output files
+        run: |
           ls -al dist/
 
-      - name: Check if epo-macos was created
-        run: |
-          if [ ! -f dist/epo-macos ]; then
-            echo "Warning: epo-macos was not created."
-          fi
-
-      - name: Upload epo executable as artifact
+      - name: Upload epo-macos as artifact
         uses: actions/upload-artifact@v4
         with:
           name: epo-executable-macos
@@ -125,8 +117,8 @@ jobs:
 
       - name: Add and commit all built executables
         run: |
-          git add dist/*
-          git diff --cached --quiet || git commit -m "Add built executables for Windows, Linux, and macOS"  # Tylko jeśli są zmiany
+          git add dist/* || echo "No files to add"
+          git diff --cached --quiet || git commit -m "Add built executables for Windows, Linux, and macOS"
 
       - name: Push built executables to repository
         run: |
