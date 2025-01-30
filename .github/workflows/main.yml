@@ -32,7 +32,7 @@ jobs:
           pyinstaller --onefile --name epo epo.py
 
       - name: Upload epo.exe as artifact
-        uses: actions/upload-artifact@v3  # Zaktualizowana wersja
+        uses: actions/upload-artifact@v4  # Zaktualizowana wersja (v4)
         with:
           name: epo-executable
           path: dist/epo.exe
