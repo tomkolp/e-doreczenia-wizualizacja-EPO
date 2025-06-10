@@ -68,6 +68,8 @@ def doreczenie_parse_xml_file(file_path):
     # Extract Adresat
     adresat_nazwa_elem = root.find('.//mstns:Adresat/mstns:Nazwa', ns)
     adresat_nazwa = adresat_nazwa_elem.text if adresat_nazwa_elem is not None else "Brak danych"
+    adresat_nazwa2_elem = root.find('.//mstns:Adresat/mstns:Nazwa2', ns)
+    adresat_nazwa2 = adresat_nazwa2_elem.text if adresat_nazwa2_elem is not None else "Brak danych"
     adresat_ulica_elem = root.find('.//mstns:Adresat/mstns:Ulica', ns)
     adresat_ulica = adresat_ulica_elem.text if adresat_ulica_elem is not None else "Brak danych"
     adresat_numer_domu_elem = root.find('.//mstns:Adresat/mstns:NumerDomu', ns)
