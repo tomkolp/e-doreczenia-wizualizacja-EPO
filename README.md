@@ -2,7 +2,7 @@
 
 ## Autor
 Tomasz Rekusz
-
+[☕ Wesprzyj mnie na BuyCoffee.to](https://buycoffee.to/tomkolp)
 ## Opis
 Program generuje wizualiację Elektronicznego Potwierdzenia Odbioru (EPO) w formacie xml dla przesyłek Poczty Polskiej (PUH - Publiczna Usługa Hybrydowa).
 
