@@ -1152,9 +1152,7 @@ def check_latest_release(owner, repo, current_version):
         print(f"Nie udało się pobrać informacji o najnowszej wersji: {e}")
 
 if __name__ == "__main__":
-    print("EPO wersja 1.2.0 Autor: Tomasz Rekusz")
-    print("Kod źródłowy / strona pobierania: https://github.com/tomkolp/e-doreczenia-wizualizacja-EPO")
-    print("Strona www: https://laptopy.srodaslaska.eu")
+    print("EPO wersja 1.2.0 Autor: Tomasz Rekusz https://github.com/tomkolp/e-doreczenia-wizualizacja-EPO")
     print()
 
     # Przetwarzanie plików
