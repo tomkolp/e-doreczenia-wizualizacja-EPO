@@ -1162,7 +1162,7 @@ if __name__ == "__main__":
     # Sprawdzanie najnowszej wersji
     owner = "tomkolp"
     repo = "e-doreczenia-wizualizacja-EPO"
-    current_version = "1.2.0"
+    current_version = "1.3.0"
     check_latest_release(owner, repo, current_version)
 
     print()
