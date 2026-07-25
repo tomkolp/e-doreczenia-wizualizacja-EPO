@@ -2,3 +2,5 @@ reportlab
 requests
 packaging
 defusedxml
+customtkinter
+pillow
