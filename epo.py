@@ -10,13 +10,20 @@ from dataclasses import dataclass, field
 from typing import List, Optional, Dict
 import webbrowser
 
-# Bezpieczny import parsera XML
+if sys.platform == "win32":
+    try:
+        import ctypes
+        hWnd = ctypes.windll.kernel32.GetConsoleWindow()
+        if hWnd != 0:
+            ctypes.windll.user32.ShowWindow(hWnd, 0)
+    except Exception:
+        pass
+
 try:
     import defusedxml.ElementTree as ET
 except ImportError:
     import xml.etree.ElementTree as ET
 
-# Sprawdzanie bibliotek zewnętrznych
 try:
     import requests
     from packaging import version
@@ -36,25 +43,17 @@ except ImportError as e:
     input("Naciśnij Enter, aby zamknąć...")
     sys.exit(1)
 
-APP_VERSION = "2.1.0"
+APP_VERSION = "2.1.2"
 CONFIG_FILE = "epo_config.json"
 MAX_FILENAME_LENGTH = 240
 
 ctk.set_appearance_mode("System")
 ctk.set_default_color_theme("blue")
 
-# =====================================================================
-# ROZWIĄZANIE PROBLEMU Z FOLDEREM DLA PYINSTALLER (.EXE)
-# =====================================================================
 def get_app_dir():
-    """Zwraca właściwy katalog, niezależnie czy to skrypt .py, czy skompilowane .exe"""
     if getattr(sys, 'frozen', False):
         return os.path.dirname(os.path.abspath(sys.executable))
     return os.path.dirname(os.path.abspath(__file__))
-
-# =====================================================================
-# MODEL DANYCH
-# =====================================================================
 
 @dataclass
 class ReportField:
@@ -68,7 +67,7 @@ class ReportField:
 class EPOReportData:
     source_filename: str
     file_path: str
-    typ_raportu: str  # "doreczenie", "zwrot_awizowany", "doreczenie_po_awizo", "zwrot"
+    typ_raportu: str
     id_karty: str
     id_przesylki: str
     numer_nadania: str
@@ -78,10 +77,6 @@ class EPOReportData:
     hex_color: str = "#2ecc71"
     fields: List[ReportField] = field(default_factory=list)
     podpis_base64: Optional[str] = None
-
-# =====================================================================
-# NARZĘDZIA DO PARSOWANIA XML
-# =====================================================================
 
 def find_element(parent: ET.Element, xpath: str, namespaces: Dict[str, str] = None) -> Optional[ET.Element]:
     if parent is None:
@@ -139,10 +134,6 @@ def format_address(nazwa: str, nazwa2: str, ulica: str, dom: str, lokal: str, ko
     if kod_miasto and kod_miasto != "Brak danych":
         lines.append(kod_miasto)
     return lines
-
-# =====================================================================
-# PARSERY DOKUMENTÓW EPO
-# =====================================================================
 
 def parse_doreczenie(file_path: str, root: ET.Element) -> Optional[EPOReportData]:
     ns = {'mstns': 'KartaEPO/2018/07/15'}
@@ -591,7 +582,7 @@ class PDFReportGenerator:
         self.c.save()
 
 # =====================================================================
-# WIDŻET Z POWIADOMIENIEM DYMKOWYM (TOOLTIP)
+# WIDŻET TOOLTIP
 # =====================================================================
 class Tooltip:
     def __init__(self, widget, text):
@@ -599,7 +590,6 @@ class Tooltip:
         self.text = text
         self.tip_window = None
         self.id = None
-        self.x = self.y = 0
         self.widget.bind("<Enter>", self.enter)
         self.widget.bind("<Leave>", self.leave)
         self.widget.bind("<ButtonPress>", self.leave)
@@ -622,10 +612,8 @@ class Tooltip:
             self.widget.after_cancel(id_)
 
     def showtip(self, event=None):
-        x = y = 0
-        x, y, cx, cy = self.widget.bbox("insert")
-        x += self.widget.winfo_rootx() + 25
-        y += self.widget.winfo_rooty() + 20
+        x = self.widget.winfo_rootx() + 25
+        y = self.widget.winfo_rooty() + 20
         self.tip_window = tw = ctk.CTkToplevel(self.widget)
         tw.wm_overrideredirect(True)
         tw.wm_geometry(f"+{x}+{y}")
@@ -663,10 +651,16 @@ class EPOGuiApp(ctk.CTk):
         self.row_frames: Dict[str, ctk.CTkFrame] = {}
         self.selected_file_path: Optional[str] = None
         self.current_folder: str = ""
+        self.update_info_text = ""
 
         self.load_config()
         self.build_ui()
         self.load_folder(self.current_folder)
+
+        threading.Thread(target=self.check_latest_release_background, daemon=True).start()
+        
+        # Opóźnione wywołanie przeliczenia licznika (rozwiązuje problem z zerem na starcie)
+        self.after(300, self.update_gen_button)
 
     def load_config(self):
         default_dir = get_app_dir()
@@ -703,14 +697,21 @@ class EPOGuiApp(ctk.CTk):
         top_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=(10, 5))
         top_frame.grid_columnconfigure(1, weight=1)
 
-        ctk.CTkLabel(top_frame, text="Katalog XML:", font=("Arial", 12, "bold")).grid(row=0, column=0, padx=10, pady=10)
+        title_box = ctk.CTkFrame(top_frame, fg_color="transparent")
+        title_box.grid(row=0, column=0, columnspan=5, sticky="w", padx=10, pady=(2, 0))
+        
+        self.lbl_update_pulse = ctk.CTkLabel(title_box, text="", font=("Arial", 11, "bold"), text_color="#f39c12", cursor="hand2")
+        self.lbl_update_pulse.pack(side="left")
+        self.lbl_update_pulse.bind("<Button-1>", lambda e: webbrowser.open("https://github.com/tomkolp/e-doreczenia-wizualizacja-EPO/releases"))
+
+        ctk.CTkLabel(top_frame, text="Katalog XML:", font=("Arial", 12, "bold")).grid(row=1, column=0, padx=10, pady=10)
         self.folder_entry = ctk.CTkEntry(top_frame)
-        self.folder_entry.grid(row=0, column=1, sticky="ew", padx=5, pady=10)
+        self.folder_entry.grid(row=1, column=1, sticky="ew", padx=5, pady=10)
         self.folder_entry.insert(0, self.current_folder)
 
-        ctk.CTkButton(top_frame, text="Zmień...", width=80, command=self.browse_folder).grid(row=0, column=2, padx=5, pady=10)
-        ctk.CTkButton(top_frame, text="Odśwież", width=80, command=lambda: self.load_folder(self.folder_entry.get())).grid(row=0, column=3, padx=5, pady=10)
-        ctk.CTkCheckBox(top_frame, text="Zapamiętaj folder", variable=self.remember_var, command=self.save_config).grid(row=0, column=4, padx=10, pady=10)
+        ctk.CTkButton(top_frame, text="Zmień...", width=80, command=self.browse_folder).grid(row=1, column=2, padx=5, pady=10)
+        ctk.CTkButton(top_frame, text="Odśwież", width=80, command=lambda: self.load_folder(self.folder_entry.get())).grid(row=1, column=3, padx=5, pady=10)
+        ctk.CTkCheckBox(top_frame, text="Zapamiętaj folder", variable=self.remember_var, command=self.save_config).grid(row=1, column=4, padx=10, pady=10)
 
         main_frame = ctk.CTkFrame(self, fg_color="transparent")
         main_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=5)
@@ -781,13 +782,13 @@ class EPOGuiApp(ctk.CTk):
         self.log(f"Katalog roboczy: {self.current_folder}")
 
     def bind_mouse_scroll(self, widget):
-        """Przepuszcza zdarzenia przewijania myszą z widżetów do głównego panelu przewijania."""
         def _on_mousewheel(event):
-            self.preview_scroll._parent_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+            move = int(-1 * (event.delta / 10))
+            self.preview_scroll._parent_canvas.yview_scroll(move, "units")
         def _on_linux_scroll_up(event):
-            self.preview_scroll._parent_canvas.yview_scroll(-1, "units")
+            self.preview_scroll._parent_canvas.yview_scroll(-5, "units")
         def _on_linux_scroll_down(event):
-            self.preview_scroll._parent_canvas.yview_scroll(1, "units")
+            self.preview_scroll._parent_canvas.yview_scroll(5, "units")
 
         widget.bind("<MouseWheel>", _on_mousewheel, add="+")
         widget.bind("<Button-4>", _on_linux_scroll_up, add="+")
@@ -851,7 +852,7 @@ class EPOGuiApp(ctk.CTk):
             row_bg = ("gray85", "gray17") if idx % 2 == 0 else "transparent"
             row = ctk.CTkFrame(self.scroll_list, fg_color=row_bg, corner_radius=6)
             row.grid(row=idx, column=0, sticky="ew", pady=2, padx=2)
-            row.grid_columnconfigure(2, weight=1)
+            row.grid_columnconfigure(3, weight=1)
             self.row_frames[fpath] = row
 
             chk = ctk.CTkCheckBox(row, text="", width=24, command=self.update_gen_button)
@@ -862,9 +863,15 @@ class EPOGuiApp(ctk.CTk):
             badge = ctk.CTkLabel(row, text=data.status_opis, font=("Arial", 11, "bold"), fg_color=data.hex_color, text_color="white", corner_radius=4, padx=6, pady=2)
             badge.grid(row=0, column=1, sticky="w", padx=10, pady=6)
 
+            expected_pdf = os.path.join(folder_path, f"{os.path.splitext(data.source_filename)[0]}_{data.typ_raportu}.pdf")
+            if len(expected_pdf) > MAX_FILENAME_LENGTH:
+                warn_lbl = ctk.CTkLabel(row, text=" [!] ", font=("Arial", 10, "bold"), fg_color="#c0392b", text_color="white", corner_radius=3, cursor="hand2")
+                warn_lbl.grid(row=0, column=2, padx=(0, 5), pady=6)
+                Tooltip(warn_lbl, "⚠️ Za długa nazwa pliku lub ścieżka!\nZmień nazwę pliku na krótszą lub przenieś go do folderu z krótszą ścieżką.")
+
             info_text = f"{data.source_filename}\nAdresat: {data.adresat_skrotony} | {data.data_glowna}"
             lbl = ctk.CTkLabel(row, text=info_text, font=("Arial", 11), justify="left", anchor="w", text_color=("gray10", "gray90"))
-            lbl.grid(row=0, column=2, sticky="ew", padx=(0, 10), pady=6)
+            lbl.grid(row=0, column=3, sticky="ew", padx=(0, 10), pady=6)
             
             for widget in (row, badge, lbl):
                 widget.bind("<Button-1>", lambda e, p=fpath: self.show_preview(p))
@@ -873,6 +880,7 @@ class EPOGuiApp(ctk.CTk):
         total = len(self.loaded_data)
         self.stats_label.configure(text=f"Wczytano: {total} | Doręczenia: {counts['doreczenie'] + counts['doreczenie_po_awizo']} | Zwroty: {counts['zwrot'] + counts['zwrot_awizowany']}")
         self.log(f"Pomyślnie wczytano i rozpoznano {total} plików XML.")
+        
         self.update_gen_button()
 
     def filter_file_list(self, event=None):
@@ -885,6 +893,7 @@ class EPOGuiApp(ctk.CTk):
                 frame.grid()
             else:
                 frame.grid_remove()
+        self.update_gen_button()
 
     def toggle_all(self, state: bool):
         for chk in self.checkboxes.values():
@@ -894,7 +903,7 @@ class EPOGuiApp(ctk.CTk):
         self.update_gen_button()
 
     def update_gen_button(self):
-        selected_count = sum(1 for chk in self.checkboxes.values() if chk.get() and chk.winfo_viewable())
+        selected_count = sum(1 for fpath, chk in self.checkboxes.items() if chk.get() and self.row_frames[fpath].winfo_ismapped())
         self.gen_btn.configure(text=f"Generuj PDF dla zaznaczonych ({selected_count})")
 
     def show_preview(self, file_path: str):
@@ -915,19 +924,19 @@ class EPOGuiApp(ctk.CTk):
         title_box.grid(row=row_idx, column=0, sticky="ew", pady=(0, 10))
         ctk.CTkLabel(title_box, text=f"{data.status_opis.upper()}", font=("Arial", 14, "bold"), text_color="white").pack(side="left", padx=15, pady=6)
         
-        # IKONA OSTRZEŻENIA [!] Z TOOLTIPEM (Gdy nazwa pliku > 240 znaków)
         expected_pdf_path = os.path.join(self.current_folder, f"{os.path.splitext(data.source_filename)[0]}_{data.typ_raportu}.pdf")
         if len(expected_pdf_path) > MAX_FILENAME_LENGTH:
-            warn_icon = ctk.CTkLabel(title_box, text=" [!] ", font=("Arial", 14, "bold"), fg_color="#c0392b", text_color="white", corner_radius=4, cursor="hand2")
+            warn_icon = ctk.CTkLabel(title_box, text=" [!] ", font=("Arial", 11, "bold"), fg_color="#c0392b", text_color="white", corner_radius=3, cursor="hand2")
             warn_icon.pack(side="right", padx=10, pady=6)
-            Tooltip(warn_icon, "⚠️ DOSTĘPNY TYLKO PODGLĄD!\nŚcieżka pliku przekracza limit 240 znaków.\nSkróć nazwę pliku, aby móc wygenerować PDF.")
-        
+            Tooltip(warn_icon, "⚠️ Za długa nazwa pliku lub ścieżka!\nZmień nazwę pliku na krótszą lub przenieś go do folderu z krótszą ścieżką.")
+
         row_idx += 1
 
         if data.numer_nadania and data.numer_nadania != "Brak danych":
             url = f"https://sledzenie.poczta-polska.pl/?numer={data.numer_nadania}"
             track_btn = ctk.CTkButton(self.preview_scroll, text=f"Śledź przesyłkę: {data.numer_nadania}", font=("Arial", 12, "bold"), fg_color="#2980b9", hover_color="#3498db", command=lambda u=url: webbrowser.open(u))
             track_btn.grid(row=row_idx, column=0, sticky="ew", pady=(0, 10))
+            self.bind_mouse_scroll(track_btn)
             row_idx += 1
 
         preview_text_lines = []
@@ -947,11 +956,13 @@ class EPOGuiApp(ctk.CTk):
         txt_box.grid(row=row_idx, column=0, sticky="ew", pady=(0, 10))
         txt_box.insert("1.0", full_preview_str)
         txt_box.configure(state="disabled")
-        self.bind_mouse_scroll(txt_box)  # Naprawa przewijania rolką nad tekstem!
+        self.bind_mouse_scroll(txt_box)
         row_idx += 1
 
         if data.podpis_base64 and data.podpis_base64 not in ["Brak danych", ""]:
-            ctk.CTkLabel(self.preview_scroll, text="PODPIS ODBIORCY / GRAPHIC (Kliknij, aby powiększyć):", font=("Arial", 12, "bold"), text_color="#3498db").grid(row=row_idx, column=0, sticky="w", pady=(5, 5))
+            lbl_p = ctk.CTkLabel(self.preview_scroll, text="PODPIS ODBIORCY / GRAPHIC (Kliknij, aby powiększyć):", font=("Arial", 12, "bold"), text_color="#3498db")
+            lbl_p.grid(row=row_idx, column=0, sticky="w", pady=(5, 5))
+            self.bind_mouse_scroll(lbl_p)
             row_idx += 1
             try:
                 img_data = base64.b64decode(data.podpis_base64)
@@ -973,7 +984,7 @@ class EPOGuiApp(ctk.CTk):
                 self.bind_mouse_scroll(zoom_btn)
                 row_idx += 1
             except Exception:
-                ctk.CTkLabel(self.preview_scroll, text="[Nie udało się załadować podglądu grafiki]", text_color="red").grid(row=row_idx, column=0, sticky="w")
+                pass
 
     def show_signature_modal(self, pil_img: Image.Image):
         modal = ctk.CTkToplevel(self)
@@ -993,7 +1004,7 @@ class EPOGuiApp(ctk.CTk):
         ctk.CTkButton(modal, text="Zamknij", width=120, command=modal.destroy).pack(pady=(0, 15))
 
     def start_pdf_generation(self):
-        selected_files = [fpath for fpath, chk in self.checkboxes.items() if chk.get() and chk.winfo_viewable()]
+        selected_files = [fpath for fpath, chk in self.checkboxes.items() if chk.get() and self.row_frames[fpath].winfo_ismapped()]
         if not selected_files:
             self.log("Ostrzeżenie: Nie zaznaczono żadnych plików do wygenerowania.")
             return
@@ -1028,6 +1039,29 @@ class EPOGuiApp(ctk.CTk):
         self.log(f"Zakończono! Pomyślnie wygenerowano {success} z {total} plików PDF.")
         self.update_gen_button()
         self.gen_btn.configure(state="normal")
+
+    def check_latest_release_background(self):
+        url = "https://api.github.com/repos/tomkolp/e-doreczenia-wizualizacja-EPO/releases/latest"
+        try:
+            response = requests.get(url, timeout=(1.5, 3.0), proxies={"http": None, "https": None})
+            response.raise_for_status()
+            latest_version = response.json().get('tag_name', '')
+            if latest_version and version.parse(latest_version) > version.parse(APP_VERSION):
+                self.update_info_text = f"🚀 (Dostępna nowa wersja: {latest_version}!)"
+                self.after(0, self.start_pulse_animation)
+        except Exception as e:
+            self.after(0, lambda: self.log(f"Info aktualizacji: Nie udało się połączyć z GitHubem ({e})"))
+
+    def start_pulse_animation(self):
+        self.pulse_state = True
+        self.pulse_loop()
+
+    def pulse_loop(self):
+        if self.update_info_text:
+            color = "#f39c12" if self.pulse_state else "#e74c3c"
+            self.lbl_update_pulse.configure(text=self.update_info_text, text_color=color)
+            self.pulse_state = not self.pulse_state
+            self.after(700, self.pulse_loop)
 
 if __name__ == "__main__":
     app = EPOGuiApp()
