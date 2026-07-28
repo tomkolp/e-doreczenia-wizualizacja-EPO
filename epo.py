@@ -43,7 +43,7 @@ except ImportError as e:
     input("Naciśnij Enter, aby zamknąć...")
     sys.exit(1)
 
-APP_VERSION = "2.1.2"
+APP_VERSION = "2.1.3"
 CONFIG_FILE = "epo_config.json"
 MAX_FILENAME_LENGTH = 240
 
@@ -502,10 +502,6 @@ def parse_zwrot(file_path: str, root: ET.Element) -> Optional[EPOReportData]:
     data.fields.append(ReportField("Powód Zwrotu", get_xml_text(root, './/mstns:PowodZwrotu', ns)))
     return data
 
-# =====================================================================
-# GENERATOR PDF
-# =====================================================================
-
 class PDFReportGenerator:
     def __init__(self, output_path: str):
         self.output_path = output_path
@@ -581,9 +577,6 @@ class PDFReportGenerator:
 
         self.c.save()
 
-# =====================================================================
-# WIDŻET TOOLTIP
-# =====================================================================
 class Tooltip:
     def __init__(self, widget, text):
         self.widget = widget
@@ -628,10 +621,6 @@ class Tooltip:
         if tw:
             tw.destroy()
 
-# =====================================================================
-# INTERFEJS GRAFICZNY CUSTOMTKINTER
-# =====================================================================
-
 class EPOGuiApp(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -658,8 +647,6 @@ class EPOGuiApp(ctk.CTk):
         self.load_folder(self.current_folder)
 
         threading.Thread(target=self.check_latest_release_background, daemon=True).start()
-        
-        # Opóźnione wywołanie przeliczenia licznika (rozwiązuje problem z zerem na starcie)
         self.after(300, self.update_gen_button)
 
     def load_config(self):
@@ -1063,6 +1050,51 @@ class EPOGuiApp(ctk.CTk):
             self.pulse_state = not self.pulse_state
             self.after(700, self.pulse_loop)
 
+def run_cli_mode(folder_path: str):
+    """Funkcja obsługująca generowanie PDF z poziomu wiersza poleceń (Headless/CLI)."""
+    if not os.path.isdir(folder_path):
+        print(f"[BŁĄD] Wskazany katalog nie istnieje: {folder_path}")
+        sys.exit(1)
+
+    print(f"[*] Rozpoczynam przetwarzanie folderu w trybie konsolowym: {folder_path}")
+    parsers = [parse_doreczenie, parse_zwrot_awizowany, parse_doreczenie_po_awizo, parse_zwrot]
+    files = [f for f in os.listdir(folder_path) if f.lower().endswith(".xml")]
+    
+    success_count = 0
+    total_found = 0
+
+    for filename in sorted(files):
+        file_path = os.path.join(folder_path, filename)
+        try:
+            tree = ET.parse(file_path)
+            root = tree.getroot()
+            data = None
+            for parse_func in parsers:
+                data = parse_func(file_path, root)
+                if data:
+                    break
+            
+            if data:
+                total_found += 1
+                pdf_output = os.path.join(folder_path, f"{os.path.splitext(data.source_filename)[0]}_{data.typ_raportu}.pdf")
+                if len(pdf_output) > MAX_FILENAME_LENGTH:
+                    print(f"[POMINIĘTO] Zbyt długa ścieżka dla pliku: {data.source_filename}")
+                    continue
+                
+                gen = PDFReportGenerator(pdf_output)
+                gen.generate(data)
+                success_count += 1
+                print(f" [OK] Wygenerowano: {os.path.basename(pdf_output)}")
+        except Exception as e:
+            print(f"[BŁĄD] Nie udało się przetworzyć pliku {filename}: {e}")
+
+    print(f"[*] Zakończono! Przetworzono poprawnie {success_count} z {total_found} znalezionych plików EPO.")
+
 if __name__ == "__main__":
-    app = EPOGuiApp()
-    app.mainloop()
+    # Sprawdzenie, czy podano ścieżkę jako argument konsolowy (np. EPO.exe ścieżka)
+    if len(sys.argv) > 1:
+        target_folder = sys.argv[1]
+        run_cli_mode(target_folder)
+    else:
+        app = EPOGuiApp()
+        app.mainloop()
