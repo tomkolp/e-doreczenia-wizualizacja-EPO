@@ -1,6 +1,6 @@
-reportlab
-requests
-packaging
-defusedxml
-customtkinter
-pillow
+reportlab==4.2.5
+requests==2.34.2
+packaging==26.3
+defusedxml==0.7.1
+customtkinter==5.2.2
+pillow==13.0.0

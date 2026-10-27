@@ -1,0 +1,46 @@
+name: Dependency security audit
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - requirements.txt
+      - requirements-build.txt
+      - .github/workflows/main.yml
+      - .github/workflows/security.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - requirements.txt
+      - requirements-build.txt
+      - .github/workflows/main.yml
+      - .github/workflows/security.yml
+  schedule:
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  pip-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install pip-audit
+        run: python -m pip install --upgrade pip pip-audit
+
+      - name: Audit runtime dependencies
+        run: pip-audit -r requirements.txt
+
+      - name: Audit build dependencies
+        run: pip-audit -r requirements-build.txt
