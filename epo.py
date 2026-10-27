@@ -43,7 +43,7 @@ except ImportError as e:
     input("Naciśnij Enter, aby zamknąć...")
     sys.exit(1)
 
-APP_VERSION = "2.1.3"
+APP_VERSION = "2.1.4"
 CONFIG_FILE = "epo_config.json"
 MAX_FILENAME_LENGTH = 240
 
