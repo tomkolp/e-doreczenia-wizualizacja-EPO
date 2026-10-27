@@ -6,11 +6,17 @@ on:
       - main
     paths:
       - epo.py
+      - requirements.txt
+      - requirements-build.txt
+      - .github/workflows/main.yml
   pull_request:
     branches:
       - main
     paths:
       - epo.py
+      - requirements.txt
+      - requirements-build.txt
+      - .github/workflows/main.yml
 
 jobs:
   build-windows:
@@ -27,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller
+          pip install -r requirements-build.txt
           pip install -r requirements.txt
 
       - name: Build epo.exe on Windows
@@ -64,7 +70,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller
+          pip install -r requirements-build.txt
           pip install -r requirements.txt
 
       - name: Build executable on Linux
@@ -91,7 +97,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller
+          pip install -r requirements-build.txt
           pip install -r requirements.txt
 
       - name: Build executable on macOS
