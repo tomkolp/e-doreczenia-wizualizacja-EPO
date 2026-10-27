@@ -40,7 +40,7 @@ jobs:
         shell: pwsh
 
       - name: Upload epo.exe as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: epo-executable-windows
           path: dist/epo.exe
@@ -72,7 +72,7 @@ jobs:
           pyinstaller --onefile --name epo-linux epo.py
 
       - name: Upload epo executable as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: epo-executable-linux
           path: dist/epo-linux
@@ -103,7 +103,7 @@ jobs:
           ls -al dist/
 
       - name: Upload epo-macos as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: epo-executable-macos
           path: dist/epo-macos
