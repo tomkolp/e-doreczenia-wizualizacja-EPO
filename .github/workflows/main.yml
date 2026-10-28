@@ -12,6 +12,9 @@ on:
     paths:
       - epo.py
 
+permissions:
+  contents: read
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -110,7 +113,12 @@ jobs:
 
   commit-and-push:
     needs: [build-windows, build-linux, build-macos]
+
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -147,3 +155,4 @@ jobs:
           git push https://github.com/${{ github.repository }}.git HEAD:main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
